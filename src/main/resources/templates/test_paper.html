@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/vue.min.js"></script>
+<script src="/js/test_paper.js"></script>
+
+<div class="container">
+    <main id="app" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+        <div class="card bg-light">
+            <article class="card-body mx-auto" style="max-width: 400px;">
+                <h4 class="card-title mt-3 text-center">算术加减法题目生成器</h4>
+                <form v-on:submit.prevent>
+                    <div class="form-row align-items-center">
+                        <div class="form-group col-auto">
+                            <label for="operatorType">加减运算</label>
+                            <select id="operatorType" class="form-control" v-model="form.operator" required>
+                                <option selected>加法</option>
+                                <option>减法</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-auto">
+                            <label for="numberOfQuestions">题目数量</label>
+                            <input id="numberOfQuestions" type="number" min="1" max="100" class="form-control" placeholder="几道题" v-model="form.numberOfQuestions" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row align-items-center">
+                        <div class="form-group col-auto">
+                            <label id="labelLeftOperand" for="leftOperand">加数范围</label>
+                            <div class="input-group" id="leftOperand">
+                                <input id="minLeftOperand" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minLeftOperand" required>
+                                <input id="maxLeftOperand" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxLeftOperand" required>
+                                <div id="leftOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                            </div>
+                        </div>
+                        <div class="form-group col-auto">
+                            <label id="labelRightOperand" for="rightOperand">加数范围</label>
+                            <div class="input-group" id="rightOperand">
+                                <input id="minRightOperand" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minRightOperand" required>
+                                <input id="maxRightOperand" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxRightOperand" required>
+                                <div id="rightOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row align-items-center">
+                        <div class="form-group col-auto">
+                            <label id="labelAnswer" for="answer">总和范围</label>
+                            <div class="input-group" id="answer">
+                                <input id="minAnswer" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minAnswer" required>
+                                <input id="maxAnswer" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxAnswer" required>
+                                <div id="answerValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="add-scope-btn" class="btn btn-outline-primary" v-on:click="addScope()">加入出题范围</button>
+                </form>
+
+                <hr class="my-4">
+
+                <form v-on:submit.prevent>
+                    <div class="form-row">
+                        <div class="card-deck" v-for="(scope, index) in scopes">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ scopeTitle(scope) }}</h5>
+                                    <p class="card-text">{{ scopeLeftOperandRange(scope) }}</p>
+                                    <p class="card-text">{{ scopeRightOperandRange(scope) }}</p>
+                                    <p class="card-text">{{ scopeAnswerRange(scope) }}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-right">
+                                        <button type="button" class="close" aria-label="Close" v-on:click="removeScope(index)">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="generate-btn" class="btn btn-outline-primary" v-on:click="generateTestPaper()">生成题目</button>
+                </form>
+
+
+
+            </article>
+        </div>
+    </main>
+</div>
