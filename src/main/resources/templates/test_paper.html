@@ -17,13 +17,13 @@
 <div class="container">
     <main id="app" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
         <div class="card bg-light">
-            <article class="card-body mx-auto" style="max-width: 400px;">
+            <article class="card-body mx-auto">
                 <h4 class="card-title mt-3 text-center">算术加减法题目生成器</h4>
                 <form v-on:submit.prevent>
                     <div class="form-row align-items-center">
                         <div class="form-group col-auto">
                             <label for="operatorType">加减运算</label>
-                            <select id="operatorType" class="form-control" v-model="form.operator" required>
+                            <select id="operatorType" class="form-control" v-model="form.operator" v-on:change="onOperatorChange($event)" required>
                                 <option selected>加法</option>
                                 <option>减法</option>
                             </select>
@@ -70,21 +70,30 @@
                 <hr class="my-4">
 
                 <form v-on:submit.prevent>
+                    <div v-if="tooManyScopes" class="form-row">
+                        <div class="form-group col-12">
+                            <div class="alert alert-danger" role="alert">
+                                每次最多添加<strong>5组</strong>出题范围噢
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-row">
-                        <div class="card-deck" v-for="(scope, index) in scopes">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ scopeTitle(scope) }}</h5>
-                                    <p class="card-text">{{ scopeLeftOperandRange(scope) }}</p>
-                                    <p class="card-text">{{ scopeRightOperandRange(scope) }}</p>
-                                    <p class="card-text">{{ scopeAnswerRange(scope) }}</p>
-                                </div>
-                                <div class="card-footer">
-                                    <small class="text-right">
-                                        <button type="button" class="close" aria-label="Close" v-on:click="removeScope(index)">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </small>
+                        <div class="form-group">
+                            <div class="card-deck">
+                                <div class="card" v-for="(scope, index) in scopes">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ scopeTitle(scope) }}</h5>
+                                        <p class="card-text">{{ scopeLeftOperandRange(scope) }}</p>
+                                        <p class="card-text">{{ scopeRightOperandRange(scope) }}</p>
+                                        <p class="card-text">{{ scopeAnswerRange(scope) }}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small class="text-right">
+                                            <button type="button" class="close" aria-label="Close" v-on:click="removeScope(index)">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>

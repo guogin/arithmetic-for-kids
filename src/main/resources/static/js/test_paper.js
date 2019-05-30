@@ -19,22 +19,23 @@ $(function() {
             ],
             testPaper : [
 
-            ]
+            ],
+            tooManyScopes : false
         },
         methods: {
             addScope: function() {
-                if (this.validateScope(this.form)) {
-                    this.scopes.push({
-                        operator: this.form.operator === "加法" ? "PLUS" : "MINUS",
-                        numberOfQuestions : this.form.numberOfQuestions,
-                        minLeftOperand : this.form.minLeftOperand,
-                        maxLeftOperand : this.form.maxRightOperand,
-                        minRightOperand : this.form.minRightOperand,
-                        maxRightOperand : this.form.maxRightOperand,
-                        minAnswer : this.form.minAnswer,
-                        maxAnswer : this.form.maxAnswer
-                    });
-                }
+                if (!this.validateForm(this.form)) { return; }
+                if (!this.validateScope()) { return; }
+                this.scopes.push({
+                    operator: this.form.operator === "加法" ? "PLUS" : "MINUS",
+                    numberOfQuestions : this.form.numberOfQuestions,
+                    minLeftOperand : this.form.minLeftOperand,
+                    maxLeftOperand : this.form.maxLeftOperand,
+                    minRightOperand : this.form.minRightOperand,
+                    maxRightOperand : this.form.maxRightOperand,
+                    minAnswer : this.form.minAnswer,
+                    maxAnswer : this.form.maxAnswer
+                });
             },
             removeScope: function(index) {
                 this.scopes.splice(index, 1);
@@ -45,11 +46,33 @@ $(function() {
                     url: "/api/generateTestPaper",
                     data: JSON.stringify(this.scopes),
                     success: $.proxy(function (response) {
-                        this.testPaper = response.questionList;
+                        for (var i = 0; i < response.questionList.length; i+=2) {
+                            var i1 = i, i2 = i + 1;
+                            if (i2 < response.questionList.length) {
+                                this.testPaper.push([
+                                    response.questionList[i1], response.questionList[i2]
+                                ]);
+                            } else {
+                                this.testPaper.push([
+                                    response.questionList[i1], this.emptyQuestion() // padding for last row
+                                ]);
+                            }
+                        }
                     }, this),
                     contentType: "application/json",
                     dataType: "json"
                 });
+            },
+            onOperatorChange: function(event) {
+                if (this.form.operator === "加法") {
+                    $('#labelLeftOperand').text("加数范围");
+                    $('#labelRightOperand').text("加数范围");
+                    $('#labelAnswer').text("求和范围");
+                } else {
+                    $('#labelLeftOperand').text("被减数范围");
+                    $('#labelRightOperand').text("减数范围");
+                    $('#labelAnswer').text("求差范围");
+                }
             },
             scopeTitle : function(scope) {
                 return ( scope.operator === "PLUS" ? "加法" : "减法" ) +
@@ -76,42 +99,41 @@ $(function() {
                     " ~ " +
                     scope.maxRightOperand;
             },
-            validateScope : function(form) {
+            validateForm : function(form) {
                 if (form.numberOfQuestions == null || form.numberOfQuestions <= 0) { return false; }
                 if (form.minLeftOperand == null || form.minLeftOperand <= 0) { return false; }
                 if (form.maxLeftOperand == null || form.maxLeftOperand <= 0) { return false; }
+                if (!this.validateMinMax(form, "minLeftOperand", "maxLeftOperand")) { return false; }
                 if (form.minRightOperand == null || form.minRightOperand <= 0) { return false; }
-                if (form.maxRightOperand == null || form.maxRightOperand <= 0) { return false; }
+                if (!this.validateMinMax(form, "minRightOperand", "maxRightOperand")) { return false; }
                 if (form.minAnswer == null || form.minAnswer <= 0) { return false; }
                 if (form.maxAnswer == null || form.maxAnswer <= 0) { return false; }
+                if (!this.validateMinMax(form, "minAnswer", "maxAnswer")) { return false; }
 
-                if (form.minLeftOperand > form.maxLeftOperand) {
-                    $('#minLeftOperand,#maxLeftOperand').addClass('is-invalid');
-                    $('#leftOperandValidationError').removeClass('d-none');
+                return true;
+            },
+            validateMinMax : function(form, minProperty, maxProperty) {
+                var idField = "#" + minProperty + "," + "#" + maxProperty;
+                var idErr = "#" + minProperty.substring(3);
+
+                if (parseInt(form[minProperty], 10) > parseInt(form[maxProperty], 10)) {
+                    $(idField).addClass('is-invalid');
+                    $(idErr).removeClass('d-none');
                     return false;
                 } else {
-                    $('#minLeftOperand,#maxLeftOperand').removeClass('is-invalid');
-                    $('#leftOperandValidationError').addClass('d-none');
-                }
-                if (form.minRightOperand > form.maxRightOperand) {
-                    $('#minRightOperand,#maxRightOperand').addClass('is-invalid');
-                    $('#rightOperandValidationError').removeClass('d-none');
-                    return false;
-                } else {
-                    $('#minRightOperand,#maxRightOperand').removeClass('is-invalid');
-                    $('#rightOperandValidationError').addClass('d-none');
-                }
-                if (form.minAnswer > form.maxAnswer) {
-                    $('#minAnswer,#maxAnswer').addClass('is-invalid');
-                    $('#answerValidationError').removeClass('d-none');
-                    return false;
-                } else {
-                    $('#minAnswer,#maxAnswer').removeClass('is-invalid');
-                    $('#answerValidationError').addClass('d-none');
+                    $(idField).removeClass('is-invalid');
+                    $(idErr).addClass('d-none');
                 }
 
                 return true;
             },
+            validateScope : function() {
+                this.tooManyScopes = (this.scopes.length >= 5);
+                return !this.tooManyScopes;
+            },
+            emptyQuestion : function() {
+                return { operator : "", leftOperand : "", rightOperand : "", answer : "" };
+            }
         }
     });
 });

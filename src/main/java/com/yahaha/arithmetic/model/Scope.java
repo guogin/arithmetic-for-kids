@@ -1,10 +1,8 @@
 package com.yahaha.arithmetic.model;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -12,11 +10,13 @@ import javax.validation.constraints.NotNull;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor
 public class Scope {
     @NotNull
     private Operator operator;
 
     @Min(1)
+    @Max(1000)
     private int numberOfQuestions;
 
     @Min(0)

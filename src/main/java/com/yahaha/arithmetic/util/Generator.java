@@ -5,6 +5,7 @@ import com.yahaha.arithmetic.model.Question;
 import com.yahaha.arithmetic.model.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class Generator {
         return scope;
     }
 
-    public void setScope(Scope scope) {
+    public void setScope(@Valid Scope scope) {
         this.scope = scope;
     }
 
@@ -40,10 +41,12 @@ public class Generator {
             minRightOp = max(minRightOp, getScope().getMinRightOperand());
             maxRightOp = min(maxRightOp, getScope().getMaxRightOperand());
 
-            int rightOp = RandomUtil.randomWithRange(minRightOp, maxRightOp);
+            if (minRightOp <= maxRightOp) {
+                int rightOp = RandomUtil.randomWithRange(minRightOp, maxRightOp);
 
-            Question question = new Question(getScope().getOperator(), leftOp, rightOp);
-            questionList.add(question);
+                Question question = new Question(getScope().getOperator(), leftOp, rightOp);
+                questionList.add(question);
+            }
         }
 
         return questionList;
