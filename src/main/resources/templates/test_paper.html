@@ -15,7 +15,7 @@
 <script src="/js/test_paper.js"></script>
 
 <div class="container">
-    <main id="app" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <main id="app" role="main">
         <div class="card bg-light">
             <article class="card-body mx-auto">
                 <h4 class="card-title mt-3 text-center">加减法题目生成器</h4>
@@ -38,7 +38,13 @@
                         <div class="form-group col-auto">
                             <label id="labelLeftOperand" for="leftOperand">加数范围</label>
                             <div class="input-group" id="leftOperand">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">从</div>
+                                </div>
                                 <input id="minLeftOperand" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minLeftOperand" required>
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">到</div>
+                                </div>
                                 <input id="maxLeftOperand" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxLeftOperand" required>
                                 <div id="leftOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
                             </div>
@@ -46,7 +52,13 @@
                         <div class="form-group col-auto">
                             <label id="labelRightOperand" for="rightOperand">加数范围</label>
                             <div class="input-group" id="rightOperand">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">从</div>
+                                </div>
                                 <input id="minRightOperand" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minRightOperand" required>
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">到</div>
+                                </div>
                                 <input id="maxRightOperand" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxRightOperand" required>
                                 <div id="rightOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
                             </div>
@@ -57,7 +69,13 @@
                         <div class="form-group col-auto">
                             <label id="labelAnswer" for="answer">总和范围</label>
                             <div class="input-group" id="answer">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">从</div>
+                                </div>
                                 <input id="minAnswer" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minAnswer" required>
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">到</div>
+                                </div>
                                 <input id="maxAnswer" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxAnswer" required>
                                 <div id="answerValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
                             </div>
