@@ -17,15 +17,16 @@ $(function() {
             scopes : [
 
             ],
-            testPaper : [
+            questions : [
 
             ],
-            tooManyScopes : false
+            tooManyScopes : false,
+            showAnswer : false
         },
         methods: {
             addScope: function() {
                 if (!this.validateForm(this.form)) { return; }
-                if (!this.validateScope()) { return; }
+                if (!this.checkNumberOfScopes()) { return; }
                 this.scopes.push({
                     operator: this.form.operator === "加法" ? "PLUS" : "MINUS",
                     numberOfQuestions : this.form.numberOfQuestions,
@@ -39,6 +40,7 @@ $(function() {
             },
             removeScope: function(index) {
                 this.scopes.splice(index, 1);
+                this.checkNumberOfScopes();
             },
             generateTestPaper: function() {
                 $.ajax({
@@ -46,15 +48,16 @@ $(function() {
                     url: "/api/generateTestPaper",
                     data: JSON.stringify(this.scopes),
                     success: $.proxy(function (response) {
+                        this.questions = [];
                         for (var i = 0; i < response.questionList.length; i+=2) {
                             var i1 = i, i2 = i + 1;
                             if (i2 < response.questionList.length) {
-                                this.testPaper.push([
+                                this.questions.push([
                                     response.questionList[i1], response.questionList[i2]
                                 ]);
                             } else {
-                                this.testPaper.push([
-                                    response.questionList[i1], this.emptyQuestion() // padding for last row
+                                this.questions.push([
+                                    response.questionList[i1], null // padding for last row
                                 ]);
                             }
                         }
@@ -127,12 +130,15 @@ $(function() {
 
                 return true;
             },
-            validateScope : function() {
+            checkNumberOfScopes : function() {
                 this.tooManyScopes = (this.scopes.length >= 5);
                 return !this.tooManyScopes;
             },
-            emptyQuestion : function() {
-                return { operator : "", leftOperand : "", rightOperand : "", answer : "" };
+            formatQuestion : function(question) {
+                if (question === null) {
+                    return "";
+                }
+                return question.expression + ( this.showAnswer ? question.answer : "");
             }
         }
     });

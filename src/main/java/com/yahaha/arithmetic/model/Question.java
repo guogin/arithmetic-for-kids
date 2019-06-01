@@ -7,6 +7,7 @@ import lombok.*;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Question {
     private Operator operator;
     private int leftOperand;
@@ -20,8 +21,7 @@ public class Question {
         }
     }
 
-    @Override
-    public String toString() {
+    public String getExpression() {
         return leftOperand +
                 (operator == Operator.PLUS ? " + " : " - ") +
                 rightOperand +
