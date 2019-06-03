@@ -5,13 +5,23 @@
     <meta charset="UTF-8">
     <title>幼升小算术</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .form-inline .input-group.input-group-compact {
+            width : 12rem;
+        }
+        .form-inline .form-control.form-control-compact {
+            width : 5rem;
+        }
+    </style>
 </head>
 
 <body>
 
 <script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/popper.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/vue.min.js"></script>
+<script src="/js/jspdf.min.js"></script>
 <script src="/js/test_paper.js"></script>
 
 <div class="container">
@@ -19,73 +29,67 @@
         <div class="card bg-light">
             <article class="card-body mx-auto">
                 <h4 class="card-title mt-3 text-center">加减法题目生成器</h4>
-                <form v-on:submit.prevent>
-                    <div class="form-row align-items-center">
-                        <div class="form-group col-auto">
-                            <label for="operatorType">加减运算</label>
-                            <select id="operatorType" class="form-control" v-model="form.operator" v-on:change="onOperatorChange($event)" required>
-                                <option selected>加法</option>
-                                <option>减法</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-auto">
-                            <label for="numberOfQuestions">题目数量</label>
-                            <input id="numberOfQuestions" type="number" min="1" max="100" class="form-control" placeholder="几道题" v-model="form.numberOfQuestions" required>
-                        </div>
+                <form class="form-inline" v-on:submit.prevent>
+                    <div class="form-group">
+                        <label for="operatorType" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2" >运算</label>
+                        <select id="operatorType" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" v-model="form.operator" v-on:change="onOperatorChange($event)" required>
+                            <option selected>加法</option>
+                            <option>减法</option>
+                        </select>
                     </div>
 
-                    <div class="form-row align-items-center">
-                        <div class="form-group col-auto">
-                            <label id="labelLeftOperand" for="leftOperand">加数范围</label>
-                            <div class="input-group" id="leftOperand">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">从</div>
-                                </div>
-                                <input id="minLeftOperand" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minLeftOperand" required>
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">到</div>
-                                </div>
-                                <input id="maxLeftOperand" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxLeftOperand" required>
-                                <div id="leftOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
-                            </div>
-                        </div>
-                        <div class="form-group col-auto">
-                            <label id="labelRightOperand" for="rightOperand">加数范围</label>
-                            <div class="input-group" id="rightOperand">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">从</div>
-                                </div>
-                                <input id="minRightOperand" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minRightOperand" required>
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">到</div>
-                                </div>
-                                <input id="maxRightOperand" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxRightOperand" required>
-                                <div id="rightOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="numberOfQuestions" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">题目数</label>
+                        <input id="numberOfQuestions" type="number" min="1" max="100" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" placeholder="几道题" v-model="form.numberOfQuestions" required>
                     </div>
 
-                    <div class="form-row align-items-center">
-                        <div class="form-group col-auto">
-                            <label id="labelAnswer" for="answer">总和范围</label>
-                            <div class="input-group" id="answer">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">从</div>
-                                </div>
-                                <input id="minAnswer" type="number" min="0" class="form-control" placeholder="最小值" v-model="form.minAnswer" required>
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">到</div>
-                                </div>
-                                <input id="maxAnswer" type="number" min="0" class="form-control" placeholder="最大值" v-model="form.maxAnswer" required>
-                                <div id="answerValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
-                            </div>
+                    <div class="form-group">
+                    <label id="labelLeftOperand" for="leftOperand" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">加数</label>
+                    <div class="input-group input-group-sm input-group-compact mr-sm-2 mb-sm-2" id="leftOperand">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">从</div>
                         </div>
+                        <input id="minLeftOperand" type="number" min="0" class="form-control" placeholder="最小" v-model="form.minLeftOperand" required>
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">到</div>
+                        </div>
+                        <input id="maxLeftOperand" type="number" min="0" class="form-control" placeholder="最大" v-model="form.maxLeftOperand" required>
+                        <div id="leftOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                    </div>
                     </div>
 
-                    <button id="add-scope-btn" class="btn btn-outline-primary" v-on:click="addScope()">加入出题范围</button>
+                    <div class="form-group">
+                    <label id="labelRightOperand" for="rightOperand" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">加数</label>
+                    <div class="input-group input-group-sm input-group-compact mr-sm-2 mb-sm-2" id="rightOperand">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">从</div>
+                        </div>
+                        <input id="minRightOperand" type="number" min="0" class="form-control" placeholder="最小" v-model="form.minRightOperand" required>
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">到</div>
+                        </div>
+                        <input id="maxRightOperand" type="number" min="0" class="form-control" placeholder="最大" v-model="form.maxRightOperand" required>
+                        <div id="rightOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                    </div>
+                    </div>
+
+                    <div class="form-group">
+                    <label id="labelAnswer" for="answer" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2 mb-sm-2">和</label>
+                    <div class="input-group input-group-sm input-group-compact mr-sm-2 mb-sm-2 mb-sm-2" id="answer">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">从</div>
+                        </div>
+                        <input id="minAnswer" type="number" min="0" class="form-control" placeholder="最小" v-model="form.minAnswer" required>
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">到</div>
+                        </div>
+                        <input id="maxAnswer" type="number" min="0" class="form-control" placeholder="最大" v-model="form.maxAnswer" required>
+                        <div id="answerValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                    </div>
+                    </div>
+
+                    <button id="add-scope-btn" class="btn btn-outline-primary btn-sm mb-sm-2" v-on:click="addScope()">加入出题范围</button>
                 </form>
-
-                <hr class="my-4">
 
                 <form v-on:submit.prevent>
                     <div v-if="tooManyScopes" class="form-row">
@@ -116,7 +120,10 @@
                             </div>
                         </div>
                     </div>
-                    <button id="generate-btn" class="btn btn-outline-primary" v-on:click="generateTestPaper()">生成题目</button>
+
+                    <button id="generate-btn" class="btn btn-outline-primary btn-sm" v-on:click="generateTestPaper()">生成题目</button>
+                    <button id="toggle-answer-btn" class="btn btn-outline-secondary btn-sm" v-on:click="toggleAnswer()">显示答案</button>
+                    <button id="export-pdf-btn" class="btn btn-outline-secondary btn-sm" v-on:click="exportToPdf()">导出PDF</button>
                 </form>
 
                 <table class="table table-striped my-3">

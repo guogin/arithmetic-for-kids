@@ -43,38 +43,40 @@ $(function() {
                 this.checkNumberOfScopes();
             },
             generateTestPaper: function() {
-                $.ajax({
-                    type: "POST",
-                    url: "/api/generateTestPaper",
-                    data: JSON.stringify(this.scopes),
-                    success: $.proxy(function (response) {
-                        this.questions = [];
-                        for (var i = 0; i < response.questionList.length; i+=2) {
-                            var i1 = i, i2 = i + 1;
-                            if (i2 < response.questionList.length) {
-                                this.questions.push([
-                                    response.questionList[i1], response.questionList[i2]
-                                ]);
-                            } else {
-                                this.questions.push([
-                                    response.questionList[i1], null // padding for last row
-                                ]);
+                if (this.scopes.length > 0) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/generateTestPaper",
+                        data: JSON.stringify(this.scopes),
+                        success: $.proxy(function (response) {
+                            this.questions = [];
+                            for (var i = 0; i < response.questionList.length; i += 2) {
+                                var i1 = i, i2 = i + 1;
+                                if (i2 < response.questionList.length) {
+                                    this.questions.push([
+                                        response.questionList[i1], response.questionList[i2]
+                                    ]);
+                                } else {
+                                    this.questions.push([
+                                        response.questionList[i1], null // padding for last row
+                                    ]);
+                                }
                             }
-                        }
-                    }, this),
-                    contentType: "application/json",
-                    dataType: "json"
-                });
+                        }, this),
+                        contentType: "application/json",
+                        dataType: "json"
+                    });
+                }
             },
             onOperatorChange: function(event) {
                 if (this.form.operator === "加法") {
-                    $('#labelLeftOperand').text("加数范围");
-                    $('#labelRightOperand').text("加数范围");
-                    $('#labelAnswer').text("求和范围");
+                    $('#labelLeftOperand').text("加数");
+                    $('#labelRightOperand').text("加数");
+                    $('#labelAnswer').text("和");
                 } else {
-                    $('#labelLeftOperand').text("被减数范围");
-                    $('#labelRightOperand').text("减数范围");
-                    $('#labelAnswer').text("求差范围");
+                    $('#labelLeftOperand').text("被减数");
+                    $('#labelRightOperand').text("减数");
+                    $('#labelAnswer').text("差");
                 }
             },
             scopeTitle : function(scope) {
@@ -139,6 +141,24 @@ $(function() {
                     return "";
                 }
                 return question.expression + ( this.showAnswer ? question.answer : "");
+            },
+            toggleAnswer : function() {
+                this.showAnswer = !this.showAnswer;
+                $('#toggle-answer-btn').text(this.showAnswer? "隐藏答案" : "显示答案");
+            },
+            exportToPdf : function() {
+                if (this.questions.length > 0) {
+                    var tableData = this.questions.map($.proxy(function(row) {
+                        return {
+                            col1: this.formatQuestion(row[0]),
+                            col2: this.formatQuestion(row[1])
+                        };
+                    }, this));
+
+                    var doc = new jsPDF();
+                    doc.table(1, 1, tableData, undefined, {autoSize: true, printHeaders: false});
+                    doc.save("questions.pdf", undefined);
+                }
             }
         }
     });
