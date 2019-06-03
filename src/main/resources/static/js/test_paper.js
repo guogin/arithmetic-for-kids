@@ -100,9 +100,9 @@ $(function() {
             scopeAnswerRange : function(scope) {
                 return ( scope.operator === "PLUS" ? "和" : "差" ) +
                     ": " +
-                    scope.minRightOperand +
+                    scope.minAnswer +
                     " ~ " +
-                    scope.maxRightOperand;
+                    scope.maxAnswer;
             },
             validateForm : function(form) {
                 if (form.numberOfQuestions == null || form.numberOfQuestions <= 0) { return false; }
