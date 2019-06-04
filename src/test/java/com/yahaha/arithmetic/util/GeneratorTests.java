@@ -31,7 +31,7 @@ public class GeneratorTests {
 
     @Test
     public void generateSubtractionQuestions() throws Exception {
-        Scope scope = new Scope(Operator.MINUS, 1000, 11, 9999, 11, 9999, 300, 999);
+        Scope scope = new Scope(Operator.MINUS, 1000, 200, 9999, 100, 9999, 100, 999);
 
         Generator generator = new Generator();
         generator.setScope(scope);
