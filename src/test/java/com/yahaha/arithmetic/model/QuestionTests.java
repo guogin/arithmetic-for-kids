@@ -13,7 +13,7 @@ public class QuestionTests {
     @Test
     public void stringify() {
         Question theQuestion = new Question(Operator.PLUS, 12, 9);
-        assertEquals("12 + 9 = ", theQuestion.toString());
+        assertEquals("12 + 9 = ", theQuestion.getExpression());
     }
 
     @Test

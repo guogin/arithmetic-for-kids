@@ -48,20 +48,24 @@ $(function() {
                         type: "POST",
                         url: "/api/generateTestPaper",
                         data: JSON.stringify(this.scopes),
-                        success: $.proxy(function (response) {
+                        success: $.proxy(function (data) {
                             this.questions = [];
-                            for (var i = 0; i < response.questionList.length; i += 2) {
+                            for (var i = 0; i < data.questionList.length; i += 2) {
                                 var i1 = i, i2 = i + 1;
-                                if (i2 < response.questionList.length) {
+                                if (i2 < data.questionList.length) {
                                     this.questions.push([
-                                        response.questionList[i1], response.questionList[i2]
+                                        data.questionList[i1], data.questionList[i2]
                                     ]);
                                 } else {
                                     this.questions.push([
-                                        response.questionList[i1], null // padding for last row
+                                        data.questionList[i1], null // padding for last row
                                     ]);
                                 }
                             }
+                        }, this),
+                        error : $.proxy(function(xhr, textStatus, errorThrown) {
+                            $('#error-message').text(xhr.responseJSON.message || "服务器检查了你的参数，它总觉得哪里不对，但又说不上来...")
+                            $('#error-message-dialog').modal();
                         }, this),
                         contentType: "application/json",
                         dataType: "json"

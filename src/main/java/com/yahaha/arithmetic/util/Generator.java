@@ -1,5 +1,6 @@
 package com.yahaha.arithmetic.util;
 
+import com.yahaha.arithmetic.error.InvalidScopeException;
 import com.yahaha.arithmetic.model.Operator;
 import com.yahaha.arithmetic.model.Question;
 import com.yahaha.arithmetic.model.Scope;
@@ -24,28 +25,29 @@ public class Generator {
         this.scope = scope;
     }
 
-    public List<Question> generate() {
+    public List<Question> generate() throws InvalidScopeException {
         List<Question> questionList = new ArrayList<>();
 
         for (int i = 0; i < getScope().getNumberOfQuestions(); ++i) {
             int leftOp = RandomUtil.randomWithRange(getScope().getMinLeftOperand(), getScope().getMaxLeftOperand());
 
-            int minRightOp, maxRightOp;
-            if (getScope().getOperator() == Operator.PLUS) {
-                minRightOp = getScope().getMinAnswer() - leftOp;
-                maxRightOp = getScope().getMaxAnswer() - leftOp;
-            } else {
-                minRightOp = leftOp - getScope().getMaxAnswer();
-                maxRightOp = leftOp - getScope().getMinAnswer();
-            }
-            minRightOp = max(minRightOp, getScope().getMinRightOperand());
-            maxRightOp = min(maxRightOp, getScope().getMaxRightOperand());
+            // Derive the boundary of the right operand
+            int minRightOp = getScope().getOperator() == Operator.PLUS ?
+                    getScope().getMinAnswer() - leftOp :
+                    leftOp - getScope().getMaxAnswer();
+            int maxRightOp = getScope().getOperator() == Operator.PLUS ?
+                    getScope().getMaxAnswer() - leftOp :
+                    leftOp - getScope().getMinAnswer();
+            minRightOp = max(max(minRightOp, 0), getScope().getMinRightOperand());
+            maxRightOp = min(max(maxRightOp, 0), getScope().getMaxRightOperand());
 
             if (minRightOp <= maxRightOp) {
                 int rightOp = RandomUtil.randomWithRange(minRightOp, maxRightOp);
 
                 Question question = new Question(getScope().getOperator(), leftOp, rightOp);
                 questionList.add(question);
+            } else { //cannot generate such a number
+                throw new InvalidScopeException(getScope(), InvalidScopeException.DERIVED_MIN_GT_MAX);
             }
         }
 

@@ -11,8 +11,8 @@ import static org.junit.Assert.assertTrue;
 
 public class GeneratorTests {
     @Test
-    public void generateAdditionQuestions() {
-        Scope scope = new Scope(Operator.PLUS, 1000, 2, 9, 2, 9, 11, 18);
+    public void generateAdditionQuestions() throws Exception {
+        Scope scope = new Scope(Operator.PLUS, 1000, 2, 9999, 2, 9999, 100, 9999);
 
         Generator generator = new Generator();
         generator.setScope(scope);
@@ -30,8 +30,8 @@ public class GeneratorTests {
     }
 
     @Test
-    public void generateSubtractionQuestions() {
-        Scope scope = new Scope(Operator.MINUS, 1000, 11, 18, 2, 9, 2, 9);
+    public void generateSubtractionQuestions() throws Exception {
+        Scope scope = new Scope(Operator.MINUS, 1000, 11, 9999, 11, 9999, 300, 999);
 
         Generator generator = new Generator();
         generator.setScope(scope);

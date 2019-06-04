@@ -1,5 +1,6 @@
 package com.yahaha.arithmetic.controller;
 
+import com.yahaha.arithmetic.error.InvalidScopeException;
 import com.yahaha.arithmetic.model.Operator;
 import com.yahaha.arithmetic.model.Question;
 import com.yahaha.arithmetic.model.Scope;
@@ -12,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,18 +35,42 @@ public class PaperController {
         Scope scope = new Scope(operator, numberOfQuestions, minLeftOp, maxLeftOp, minRightOp, maxRightOp, minAnswer, maxAnswer);
         validateScope(scope, locale);
         generator.setScope(scope);
-        return generator.generate();
+
+        List<Question> questionList = Collections.emptyList();
+
+        try {
+            questionList = generator.generate();
+        } catch (InvalidScopeException ex) {
+            String errorMsg = messageSource.getMessage("invalid.scope", null, locale);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
+        }
+
+        return questionList;
     }
 
     @PostMapping(path = "/api/generateTestPaper", consumes = MediaType.APPLICATION_JSON_VALUE)
     public TestPaper generateTestPaper(@RequestBody List<Scope> scopes, Locale locale) {
         TestPaper testPaper = new TestPaper();
 
-        for (Scope scope : scopes) {
+        Iterator<Scope> iterator = scopes.iterator();
+        int index = 1; // count from 1
+
+        while (iterator.hasNext()) {
+            Scope scope = iterator.next();
+
             validateScope(scope, locale);
             generator.setScope(scope);
-            testPaper.addQuestions(generator.generate());
+
+            try {
+                testPaper.addQuestions(generator.generate());
+            } catch (InvalidScopeException ex) {
+                String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{ index }, locale);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
+            }
+
+            index++;
         }
+
         testPaper.shuffle();
 
         return testPaper;
