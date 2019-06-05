@@ -4,7 +4,13 @@ $(function() {
     app = new Vue({
         el: '#app',
         data: {
-            form : {
+            simpleForm : {
+                operator: "加法",
+                numberOfQuestions : null,
+                numberOfDigits : null,
+                hasCarryOrBorrow : true
+            },
+            advancedForm : {
                 operator: "加法",
                 numberOfQuestions : null,
                 minLeftOperand : null,
@@ -21,21 +27,25 @@ $(function() {
 
             ],
             tooManyScopes : false,
-            showAnswer : false
+            showAnswer : false,
+            settingMode: 'simple'
         },
         methods: {
+            switchSettingModeTo : function(mode) {
+                this.settingMode = mode;
+            },
             addScope: function() {
-                if (!this.validateForm(this.form)) { return; }
+                if (!this.validateForm(this.advancedForm)) { return; }
                 if (!this.checkNumberOfScopes()) { return; }
                 this.scopes.push({
-                    operator: this.form.operator === "加法" ? "PLUS" : "MINUS",
-                    numberOfQuestions : this.form.numberOfQuestions,
-                    minLeftOperand : this.form.minLeftOperand,
-                    maxLeftOperand : this.form.maxLeftOperand,
-                    minRightOperand : this.form.minRightOperand,
-                    maxRightOperand : this.form.maxRightOperand,
-                    minAnswer : this.form.minAnswer,
-                    maxAnswer : this.form.maxAnswer
+                    operator: this.advancedForm.operator === "加法" ? "PLUS" : "MINUS",
+                    numberOfQuestions : this.advancedForm.numberOfQuestions,
+                    minLeftOperand : this.advancedForm.minLeftOperand,
+                    maxLeftOperand : this.advancedForm.maxLeftOperand,
+                    minRightOperand : this.advancedForm.minRightOperand,
+                    maxRightOperand : this.advancedForm.maxRightOperand,
+                    minAnswer : this.advancedForm.minAnswer,
+                    maxAnswer : this.advancedForm.maxAnswer
                 });
             },
             removeScope: function(index) {
@@ -73,7 +83,7 @@ $(function() {
                 }
             },
             onOperatorChange: function(event) {
-                if (this.form.operator === "加法") {
+                if (this.advancedForm.operator === "加法") {
                     $('#labelLeftOperand').text("加数");
                     $('#labelRightOperand').text("加数");
                     $('#labelAnswer').text("和");
@@ -108,24 +118,24 @@ $(function() {
                     " ~ " +
                     scope.maxAnswer;
             },
-            validateForm : function(form) {
-                if (form.numberOfQuestions == null || form.numberOfQuestions <= 0) { return false; }
-                if (form.minLeftOperand == null || form.minLeftOperand <= 0) { return false; }
-                if (form.maxLeftOperand == null || form.maxLeftOperand <= 0) { return false; }
-                if (!this.validateMinMax(form, "minLeftOperand", "maxLeftOperand")) { return false; }
-                if (form.minRightOperand == null || form.minRightOperand <= 0) { return false; }
-                if (!this.validateMinMax(form, "minRightOperand", "maxRightOperand")) { return false; }
-                if (form.minAnswer == null || form.minAnswer <= 0) { return false; }
-                if (form.maxAnswer == null || form.maxAnswer <= 0) { return false; }
-                if (!this.validateMinMax(form, "minAnswer", "maxAnswer")) { return false; }
+            validateForm : function(advancedForm) {
+                if (advancedForm.numberOfQuestions == null || advancedForm.numberOfQuestions <= 0) { return false; }
+                if (advancedForm.minLeftOperand == null || advancedForm.minLeftOperand <= 0) { return false; }
+                if (advancedForm.maxLeftOperand == null || advancedForm.maxLeftOperand <= 0) { return false; }
+                if (!this.validateMinMax(advancedForm, "minLeftOperand", "maxLeftOperand")) { return false; }
+                if (advancedForm.minRightOperand == null || advancedForm.minRightOperand <= 0) { return false; }
+                if (!this.validateMinMax(advancedForm, "minRightOperand", "maxRightOperand")) { return false; }
+                if (advancedForm.minAnswer == null || advancedForm.minAnswer <= 0) { return false; }
+                if (advancedForm.maxAnswer == null || advancedForm.maxAnswer <= 0) { return false; }
+                if (!this.validateMinMax(advancedForm, "minAnswer", "maxAnswer")) { return false; }
 
                 return true;
             },
-            validateMinMax : function(form, minProperty, maxProperty) {
+            validateMinMax : function(advancedForm, minProperty, maxProperty) {
                 var idField = "#" + minProperty + "," + "#" + maxProperty;
                 var idErr = "#" + minProperty.substring(3);
 
-                if (parseInt(form[minProperty], 10) > parseInt(form[maxProperty], 10)) {
+                if (parseInt(advancedForm[minProperty], 10) > parseInt(advancedForm[maxProperty], 10)) {
                     $(idField).addClass('is-invalid');
                     $(idErr).removeClass('d-none');
                     return false;

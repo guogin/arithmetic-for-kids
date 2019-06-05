@@ -29,10 +29,49 @@
         <div class="card bg-light">
             <article class="card-body mx-auto">
                 <h4 class="card-title mt-3 text-center">加减法题目生成器</h4>
-                <form class="form-inline" v-on:submit.prevent>
+
+                <div class="mx-auto mb-sm-2 text-center">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Setting Mode">
+                        <button type="button" class="btn btn-outline-primary" v-on:click="switchSettingModeTo('simple')">简易设置</button>
+                        <button type="button" class="btn btn-outline-primary" v-on:click="switchSettingModeTo('advanced')">自定义设置</button>
+                    </div>
+                </div>
+
+                <form class="form-inline" v-on:submit.prevent v-if="settingMode === 'simple'">
+                    <div class="form-group">
+                        <label for="operatorTypeSimple" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2" >运算</label>
+                        <select id="operatorTypeSimple" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" v-model="simpleForm.operator" required>
+                            <option selected>加法</option>
+                            <option>减法</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numberOfQuestionsSimple" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">题目数</label>
+                        <input id="numberOfQuestionsSimple" type="number" min="1" max="100" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" placeholder="几道题" v-model="simpleForm.numberOfQuestions" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numberOfDigits" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">几位数</label>
+                        <input id="numberOfDigits" type="number" min="1" max="10" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" placeholder="几位数" v-model="simpleForm.numberOfDigits" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-check mr-sm-2 mb-sm-2">
+                            <input class="form-check-input" type="checkbox" id="allowCarryOrBorrow" v-model="simpleForm.hasCarryOrBorrow">
+                            <label class="form-check-label" for="allowCarryOrBorrow">
+                                进/退位
+                            </label>
+                        </div>
+                    </div>
+
+                    <button id="add-simple-scope-btn" class="btn btn-outline-primary btn-sm mb-sm-2" v-on:click="addSimpleScope()">加入出题范围</button>
+                </form>
+
+                <form class="form-inline" v-on:submit.prevent v-if="settingMode === 'advanced'">
                     <div class="form-group">
                         <label for="operatorType" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2" >运算</label>
-                        <select id="operatorType" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" v-model="form.operator" v-on:change="onOperatorChange($event)" required>
+                        <select id="operatorType" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" v-model="advancedForm.operator" v-on:change="onOperatorChange($event)" required>
                             <option selected>加法</option>
                             <option>减法</option>
                         </select>
@@ -40,7 +79,7 @@
 
                     <div class="form-group">
                         <label for="numberOfQuestions" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">题目数</label>
-                        <input id="numberOfQuestions" type="number" min="1" max="100" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" placeholder="几道题" v-model="form.numberOfQuestions" required>
+                        <input id="numberOfQuestions" type="number" min="1" max="100" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" placeholder="几道题" v-model="advancedForm.numberOfQuestions" required>
                     </div>
 
                     <div class="form-group">
@@ -49,11 +88,11 @@
                         <div class="input-group-prepend">
                             <div class="input-group-text">从</div>
                         </div>
-                        <input id="minLeftOperand" type="number" min="0" class="form-control" placeholder="最小" v-model="form.minLeftOperand" required>
+                        <input id="minLeftOperand" type="number" min="0" class="form-control" placeholder="最小" v-model="advancedForm.minLeftOperand" required>
                         <div class="input-group-prepend">
                             <div class="input-group-text">到</div>
                         </div>
-                        <input id="maxLeftOperand" type="number" min="0" class="form-control" placeholder="最大" v-model="form.maxLeftOperand" required>
+                        <input id="maxLeftOperand" type="number" min="0" class="form-control" placeholder="最大" v-model="advancedForm.maxLeftOperand" required>
                         <div id="leftOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
                     </div>
                     </div>
@@ -64,11 +103,11 @@
                         <div class="input-group-prepend">
                             <div class="input-group-text">从</div>
                         </div>
-                        <input id="minRightOperand" type="number" min="0" class="form-control" placeholder="最小" v-model="form.minRightOperand" required>
+                        <input id="minRightOperand" type="number" min="0" class="form-control" placeholder="最小" v-model="advancedForm.minRightOperand" required>
                         <div class="input-group-prepend">
                             <div class="input-group-text">到</div>
                         </div>
-                        <input id="maxRightOperand" type="number" min="0" class="form-control" placeholder="最大" v-model="form.maxRightOperand" required>
+                        <input id="maxRightOperand" type="number" min="0" class="form-control" placeholder="最大" v-model="advancedForm.maxRightOperand" required>
                         <div id="rightOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
                     </div>
                     </div>
@@ -79,11 +118,11 @@
                         <div class="input-group-prepend">
                             <div class="input-group-text">从</div>
                         </div>
-                        <input id="minAnswer" type="number" min="0" class="form-control" placeholder="最小" v-model="form.minAnswer" required>
+                        <input id="minAnswer" type="number" min="0" class="form-control" placeholder="最小" v-model="advancedForm.minAnswer" required>
                         <div class="input-group-prepend">
                             <div class="input-group-text">到</div>
                         </div>
-                        <input id="maxAnswer" type="number" min="0" class="form-control" placeholder="最大" v-model="form.maxAnswer" required>
+                        <input id="maxAnswer" type="number" min="0" class="form-control" placeholder="最大" v-model="advancedForm.maxAnswer" required>
                         <div id="answerValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
                     </div>
                     </div>
@@ -91,7 +130,7 @@
                     <button id="add-scope-btn" class="btn btn-outline-primary btn-sm mb-sm-2" v-on:click="addScope()">加入出题范围</button>
                 </form>
 
-                <form v-on:submit.prevent>
+                <form class="text-center" v-on:submit.prevent>
                     <div v-if="tooManyScopes" class="form-row">
                         <div class="form-group col-12">
                             <div class="alert alert-danger" role="alert">
