@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.yahaha.arithmetic.util.NumberUtil.composeOf;
 import static com.yahaha.arithmetic.util.RandomUtil.randomWithRange;
 
 @Service
@@ -67,8 +68,21 @@ public class SimpleGenerator implements Generator {
 
                         hasCarryOrBorrowOnTheRight = hasCarryOrBorrowOnTheRight || carryOrBorrowOnThisDigit;
                     }
+                } else {
+                    leftDigits[j] = randomWithRange(0, 9);
+
+                    if (getSimpleScope().getOperator() == Operator.PLUS) {
+                        rightDigits[j] = randomWithRange(0, 10 - leftDigits[j] - 1);
+                    } else {
+                        rightDigits[j] = randomWithRange(0, leftDigits[j]);
+                    }
                 }
             }
+
+            int leftOperand = composeOf(leftDigits);
+            int rightOperand = composeOf(rightDigits);
+            Question question = new Question(getSimpleScope().getOperator(), leftOperand, rightOperand);
+            questionList.add(question);
         }
 
         return questionList;
