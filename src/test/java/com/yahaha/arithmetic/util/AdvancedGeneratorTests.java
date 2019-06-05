@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 public class AdvancedGeneratorTests {
     @Test
     public void generateAdditionQuestions() throws Exception {
-        AdvancedScope advancedScope = new AdvancedScope(Operator.PLUS, 1000, 2, 9999, 2, 9999, 100, 9999);
+        AdvancedScope advancedScope = new AdvancedScope(Operator.PLUS, 1000, 2, 9999, 0, 9999, 100, 9999);
 
         AdvancedGenerator advancedGenerator = new AdvancedGenerator();
         advancedGenerator.setAdvancedScope(advancedScope);

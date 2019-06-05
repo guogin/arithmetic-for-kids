@@ -8,9 +8,10 @@ import javax.validation.constraints.NotNull;
 
 @Setter
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class AdvancedScope extends Scope {
     @NotNull
     private Operator operator;

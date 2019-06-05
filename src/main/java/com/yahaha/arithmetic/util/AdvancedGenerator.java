@@ -30,17 +30,20 @@ public class AdvancedGenerator implements Generator {
         List<Question> questionList = new ArrayList<>();
 
         for (int i = 0; i < getAdvancedScope().getNumberOfQuestions(); ++i) {
-            int leftOp = RandomUtil.randomWithRange(getAdvancedScope().getMinLeftOperand(), getAdvancedScope().getMaxLeftOperand());
+            // First generate one number
+            int minLeftOp = getAdvancedScope().getMinLeftOperand();
+            int maxLeftOp = getAdvancedScope().getMaxLeftOperand();
+            int leftOp = RandomUtil.randomWithRange(minLeftOp, maxLeftOp);
 
-            // Derive the boundary of the right operand
+            // Then derive the boundary of the other number
             int minRightOp = getAdvancedScope().getOperator() == Operator.PLUS ?
                     getAdvancedScope().getMinAnswer() - leftOp :
                     leftOp - getAdvancedScope().getMaxAnswer();
             int maxRightOp = getAdvancedScope().getOperator() == Operator.PLUS ?
                     getAdvancedScope().getMaxAnswer() - leftOp :
                     leftOp - getAdvancedScope().getMinAnswer();
-            minRightOp = max(max(minRightOp, 0), getAdvancedScope().getMinRightOperand());
-            maxRightOp = min(max(maxRightOp, 0), getAdvancedScope().getMaxRightOperand());
+            minRightOp = max(minRightOp, getAdvancedScope().getMinRightOperand());
+            maxRightOp = max(min(maxRightOp, getAdvancedScope().getMaxRightOperand()), 0);
 
             if (minRightOp <= maxRightOp) {
                 int rightOp = RandomUtil.randomWithRange(minRightOp, maxRightOp);
@@ -48,7 +51,7 @@ public class AdvancedGenerator implements Generator {
                 Question question = new Question(getAdvancedScope().getOperator(), leftOp, rightOp);
                 questionList.add(question);
             } else { //cannot generateQuestions such a number
-                throw new InvalidScopeException(getAdvancedScope(), InvalidScopeException.DERIVED_MIN_GT_MAX);
+                throw new InvalidScopeException(getAdvancedScope(), minRightOp, maxRightOp, InvalidScopeException.DERIVED_MIN_GT_MAX);
             }
         }
 

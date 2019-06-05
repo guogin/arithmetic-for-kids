@@ -5,13 +5,13 @@ $(function() {
         el: '#app',
         data: {
             simpleForm : {
-                operator: "加法",
+                operator: "PLUS",
                 numberOfQuestions : null,
-                numberOfDigits : null,
+                numberOfDigits : 1,
                 hasCarryOrBorrow : true
             },
             advancedForm : {
-                operator: "加法",
+                operator: "PLUS",
                 numberOfQuestions : null,
                 minLeftOperand : null,
                 maxLeftOperand : null,
@@ -38,7 +38,7 @@ $(function() {
                 if (!this.validateForm(this.advancedForm)) { return; }
                 if (!this.checkNumberOfScopes()) { return; }
                 this.scopes.push({
-                    operator: this.advancedForm.operator === "加法" ? "PLUS" : "MINUS",
+                    operator: this.advancedForm.operator,
                     numberOfQuestions : this.advancedForm.numberOfQuestions,
                     minLeftOperand : this.advancedForm.minLeftOperand,
                     maxLeftOperand : this.advancedForm.maxLeftOperand,
@@ -83,7 +83,7 @@ $(function() {
                 }
             },
             onOperatorChange: function(event) {
-                if (this.advancedForm.operator === "加法") {
+                if (this.advancedForm.operator === "PLUS") {
                     $('#labelLeftOperand').text("加数");
                     $('#labelRightOperand').text("加数");
                     $('#labelAnswer').text("和");
