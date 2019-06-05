@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.yahaha.arithmetic.util.RandomUtil.randomWithRange;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -33,7 +34,7 @@ public class AdvancedGenerator implements Generator {
             // First generate one number
             int minLeftOp = getAdvancedScope().getMinLeftOperand();
             int maxLeftOp = getAdvancedScope().getMaxLeftOperand();
-            int leftOp = RandomUtil.randomWithRange(minLeftOp, maxLeftOp);
+            int leftOp = randomWithRange(minLeftOp, maxLeftOp);
 
             // Then derive the boundary of the other number
             int minRightOp = getAdvancedScope().getOperator() == Operator.PLUS ?
@@ -46,7 +47,7 @@ public class AdvancedGenerator implements Generator {
             maxRightOp = max(min(maxRightOp, getAdvancedScope().getMaxRightOperand()), 0);
 
             if (minRightOp <= maxRightOp) {
-                int rightOp = RandomUtil.randomWithRange(minRightOp, maxRightOp);
+                int rightOp = randomWithRange(minRightOp, maxRightOp);
 
                 Question question = new Question(getAdvancedScope().getOperator(), leftOp, rightOp);
                 questionList.add(question);

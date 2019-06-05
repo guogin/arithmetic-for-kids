@@ -25,5 +25,5 @@ public class SimpleScope extends Scope {
     private int numberOfDigits;
 
     @NotNull
-    private boolean carryOrBorrow;
+    private boolean carryOrBorrowEnabled;
 }

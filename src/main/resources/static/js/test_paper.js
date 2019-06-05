@@ -8,7 +8,7 @@ $(function() {
                 operator: "PLUS",
                 numberOfQuestions : null,
                 numberOfDigits : 1,
-                hasCarryOrBorrow : true
+                isCarryOrBorrowEnabled : true
             },
             advancedForm : {
                 operator: "PLUS",
