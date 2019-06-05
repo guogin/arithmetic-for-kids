@@ -53,7 +53,19 @@ public class SimpleGenerator implements Generator {
                             borrow = 1;
                         }
                     } else {
+                        leftDigits[j] = randomWithRange(0, 9);
+                        rightDigits[j] = randomWithRange(0, 9);
 
+                        boolean carryOrBorrowOnThisDigit;
+                        if (getSimpleScope().getOperator() == Operator.PLUS){
+                            carryOrBorrowOnThisDigit = (leftDigits[j] + rightDigits[j] + carry >= 10);
+                            carry = carryOrBorrowOnThisDigit ? 1 : 0;
+                        } else {
+                            carryOrBorrowOnThisDigit = (leftDigits[j] - borrow - rightDigits[j] < 0);
+                            borrow = carryOrBorrowOnThisDigit ? 1 : 0;
+                        }
+
+                        hasCarryOrBorrowOnTheRight = hasCarryOrBorrowOnTheRight || carryOrBorrowOnThisDigit;
                     }
                 }
             }
