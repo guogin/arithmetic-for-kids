@@ -3,7 +3,7 @@ package com.yahaha.arithmetic.controller;
 import com.yahaha.arithmetic.model.Operator;
 import com.yahaha.arithmetic.model.Question;
 import com.yahaha.arithmetic.model.Scope;
-import com.yahaha.arithmetic.util.Generator;
+import com.yahaha.arithmetic.util.AdvancedGenerator;
 import com.yahaha.arithmetic.util.TestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,11 +33,11 @@ public class PaperControllerTests {
     private MockMvc mvc;
 
     @MockBean
-    private Generator generator;
+    private AdvancedGenerator advancedGenerator;
 
     @Before
     public void setup() {
-        Mockito.reset(generator);
+        Mockito.reset(advancedGenerator);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class PaperControllerTests {
                 new Scope(Operator.MINUS, 1, 11, 18, 2, 9, 2, 9)
         );
 
-        given(generator.generate())
+        given(advancedGenerator.generateQuestions())
                 .willReturn(questionList1)
                 .willReturn(questionList2);
 

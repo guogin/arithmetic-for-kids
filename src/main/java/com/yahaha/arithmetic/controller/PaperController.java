@@ -1,11 +1,9 @@
 package com.yahaha.arithmetic.controller;
 
 import com.yahaha.arithmetic.error.InvalidScopeException;
-import com.yahaha.arithmetic.model.Operator;
-import com.yahaha.arithmetic.model.Question;
 import com.yahaha.arithmetic.model.Scope;
 import com.yahaha.arithmetic.model.TestPaper;
-import com.yahaha.arithmetic.util.Generator;
+import com.yahaha.arithmetic.util.AdvancedGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -13,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +18,7 @@ import java.util.Locale;
 @RestController
 public class PaperController {
     @Autowired
-    private Generator generator;
+    private AdvancedGenerator advancedGenerator;
 
     @Autowired
     private MessageSource messageSource;
@@ -37,10 +34,10 @@ public class PaperController {
             Scope scope = iterator.next();
 
             validateScope(scope, locale);
-            generator.setScope(scope);
+            advancedGenerator.setScope(scope);
 
             try {
-                testPaper.addQuestions(generator.generate());
+                testPaper.addQuestions(advancedGenerator.generateQuestions());
             } catch (InvalidScopeException ex) {
                 String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{ index }, locale);
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
