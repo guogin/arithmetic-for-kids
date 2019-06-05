@@ -1,8 +1,8 @@
 package com.yahaha.arithmetic.controller;
 
 import com.yahaha.arithmetic.ArithmeticApplication;
+import com.yahaha.arithmetic.model.AdvancedScope;
 import com.yahaha.arithmetic.model.Operator;
-import com.yahaha.arithmetic.model.Scope;
 import com.yahaha.arithmetic.util.TestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,13 +32,13 @@ public class IntegrationTests {
 
     @Test
     public void whenInvalidParameterIsProvided_thenShouldResponseWithErrorMessage() throws Exception {
-        List<Scope> scopes = Arrays.asList(
-                new Scope(Operator.PLUS, 2, 2, 9, 100, 1, 11, 18)
+        List<AdvancedScope> advancedScopes = Arrays.asList(
+                new AdvancedScope(Operator.PLUS, 2, 2, 9, 100, 1, 11, 18)
         );
 
         mvc.perform(post("/api/generateTestPaper")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(TestUtil.asJsonString(scopes)))
+                .content(TestUtil.asJsonString(advancedScopes)))
                 .andExpect(status().isBadRequest());
     }
 }

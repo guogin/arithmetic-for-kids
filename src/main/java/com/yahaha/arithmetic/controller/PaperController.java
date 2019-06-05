@@ -1,7 +1,7 @@
 package com.yahaha.arithmetic.controller;
 
 import com.yahaha.arithmetic.error.InvalidScopeException;
-import com.yahaha.arithmetic.model.Scope;
+import com.yahaha.arithmetic.model.AdvancedScope;
 import com.yahaha.arithmetic.model.TestPaper;
 import com.yahaha.arithmetic.util.AdvancedGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +24,17 @@ public class PaperController {
     private MessageSource messageSource;
 
     @PostMapping(path = "/api/generateTestPaper", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TestPaper generateTestPaper(@RequestBody List<Scope> scopes, Locale locale) {
+    public TestPaper generateTestPaper(@RequestBody List<AdvancedScope> advancedScopes, Locale locale) {
         TestPaper testPaper = new TestPaper();
 
-        Iterator<Scope> iterator = scopes.iterator();
+        Iterator<AdvancedScope> iterator = advancedScopes.iterator();
         int index = 1; // count from 1
 
         while (iterator.hasNext()) {
-            Scope scope = iterator.next();
+            AdvancedScope advancedScope = iterator.next();
 
-            validateScope(scope, locale);
-            advancedGenerator.setScope(scope);
+            validateScope(advancedScope, locale);
+            advancedGenerator.setAdvancedScope(advancedScope);
 
             try {
                 testPaper.addQuestions(advancedGenerator.generateQuestions());
@@ -51,46 +51,46 @@ public class PaperController {
         return testPaper;
     }
 
-    private void validateScope(Scope scope, Locale locale) {
+    private void validateScope(AdvancedScope advancedScope, Locale locale) {
         boolean isValid = true;
         String errorMsg = null;
 
-        if (scope.getOperator() == null) {
+        if (advancedScope.getOperator() == null) {
             isValid = false;
             errorMsg = messageSource.getMessage("invalid.operator.message", null, locale);
-        } else if (scope.getNumberOfQuestions() < 0) {
+        } else if (advancedScope.getNumberOfQuestions() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("negative.number.of.questions.message", new Object[]{ scope.getNumberOfQuestions() }, locale);
-        } else if (scope.getNumberOfQuestions() > 1000) {
+            errorMsg = messageSource.getMessage("negative.number.of.questions.message", new Object[]{ advancedScope.getNumberOfQuestions() }, locale);
+        } else if (advancedScope.getNumberOfQuestions() > 1000) {
             isValid = false;
-            errorMsg = messageSource.getMessage("too.many.questions", new Object[]{ scope.getNumberOfQuestions() }, locale);
-        } else if (scope.getMinLeftOperand() < 0) {
+            errorMsg = messageSource.getMessage("too.many.questions", new Object[]{ advancedScope.getNumberOfQuestions() }, locale);
+        } else if (advancedScope.getMinLeftOperand() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ scope.getMinLeftOperand() }, locale);
-        } else if (scope.getMaxLeftOperand() < 0) {
+            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinLeftOperand() }, locale);
+        } else if (advancedScope.getMaxLeftOperand() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ scope.getMaxLeftOperand() }, locale);
-        } else if (scope.getMinLeftOperand() > scope.getMaxLeftOperand()) {
+            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxLeftOperand() }, locale);
+        } else if (advancedScope.getMinLeftOperand() > advancedScope.getMaxLeftOperand()) {
             isValid = false;
-            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ scope.getMinLeftOperand(), scope.getMaxLeftOperand() }, locale);
-        } else if (scope.getMinRightOperand() < 0) {
+            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinLeftOperand(), advancedScope.getMaxLeftOperand() }, locale);
+        } else if (advancedScope.getMinRightOperand() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ scope.getMinRightOperand() }, locale);
-        } else if (scope.getMaxRightOperand() < 0) {
+            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinRightOperand() }, locale);
+        } else if (advancedScope.getMaxRightOperand() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ scope.getMaxRightOperand() }, locale);
-        } else if (scope.getMinRightOperand() > scope.getMaxRightOperand()) {
+            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxRightOperand() }, locale);
+        } else if (advancedScope.getMinRightOperand() > advancedScope.getMaxRightOperand()) {
             isValid = false;
-            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ scope.getMinRightOperand(), scope.getMaxRightOperand() }, locale);
-        } else if (scope.getMinAnswer() < 0) {
+            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinRightOperand(), advancedScope.getMaxRightOperand() }, locale);
+        } else if (advancedScope.getMinAnswer() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ scope.getMinAnswer() }, locale);
-        } else if (scope.getMaxAnswer() < 0) {
+            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinAnswer() }, locale);
+        } else if (advancedScope.getMaxAnswer() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ scope.getMaxAnswer() }, locale);
-        } else if (scope.getMinAnswer() > scope.getMaxAnswer()) {
+            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxAnswer() }, locale);
+        } else if (advancedScope.getMinAnswer() > advancedScope.getMaxAnswer()) {
             isValid = false;
-            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ scope.getMinAnswer(), scope.getMaxAnswer() }, locale);
+            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinAnswer(), advancedScope.getMaxAnswer() }, locale);
         }
 
         if (!isValid) {
