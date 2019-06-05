@@ -19,13 +19,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(PaperController.class)
@@ -39,24 +38,6 @@ public class PaperControllerTests {
     @Before
     public void setup() {
         Mockito.reset(generator);
-    }
-
-    @Test
-    public void givenQuestionList_whenGenerateQuestions_returnJsonArray() throws Exception {
-        List<Question> questionList = Arrays.asList(
-                new Question(Operator.PLUS, 8, 9),
-                new Question(Operator.MINUS, 16, 7),
-                new Question(Operator.PLUS, 6, 6)
-        );
-
-        given(generator.generate()).willReturn(questionList);
-
-        mvc.perform(get("/api/generateQuestions?operator=MINUS&numberOfQuestions=10&minLeftOp=11&maxLeftOp=18&minRightOp=2&maxRightOp=9&minAnswer=2&maxAnswer=9"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[2].leftOperand", equalTo(6)))
-                .andExpect(jsonPath("$[2].answer", equalTo(12)));
     }
 
     @Test

@@ -26,28 +26,6 @@ public class PaperController {
     @Autowired
     private MessageSource messageSource;
 
-    @GetMapping(path = "/api/generateQuestions")
-    public List<Question> generateQuestions(@RequestParam Operator operator, @RequestParam int numberOfQuestions,
-                                            @RequestParam int minLeftOp, @RequestParam int maxLeftOp,
-                                            @RequestParam int minRightOp, @RequestParam int maxRightOp,
-                                            @RequestParam int minAnswer, @RequestParam int maxAnswer,
-                                            Locale locale) {
-        Scope scope = new Scope(operator, numberOfQuestions, minLeftOp, maxLeftOp, minRightOp, maxRightOp, minAnswer, maxAnswer);
-        validateScope(scope, locale);
-        generator.setScope(scope);
-
-        List<Question> questionList = Collections.emptyList();
-
-        try {
-            questionList = generator.generate();
-        } catch (InvalidScopeException ex) {
-            String errorMsg = messageSource.getMessage("invalid.scope", null, locale);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
-        }
-
-        return questionList;
-    }
-
     @PostMapping(path = "/api/generateTestPaper", consumes = MediaType.APPLICATION_JSON_VALUE)
     public TestPaper generateTestPaper(@RequestBody List<Scope> scopes, Locale locale) {
         TestPaper testPaper = new TestPaper();
