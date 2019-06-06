@@ -71,7 +71,7 @@
                         </div>
                     </div>
 
-                    <button id="add-simple-scope-btn" class="btn btn-outline-primary btn-sm mb-sm-2" v-on:click="addSimpleScope()">加入出题范围</button>
+                    <button id="add-simple-scope-btn" class="btn btn-outline-primary btn-sm mb-sm-2" v-on:click="addScope()">加入出题范围</button>
                 </form>
 
                 <form class="form-inline" v-on:submit.prevent v-if="settingMode === 'advanced'">
@@ -136,7 +136,7 @@
                     <button id="add-scope-btn" class="btn btn-outline-primary btn-sm mb-sm-2" v-on:click="addScope()">加入出题范围</button>
                 </form>
 
-                <form class="text-center" v-on:submit.prevent>
+                <form class="text-center" v-on:submit.prevent v-if="settingMode === 'simple'">
                     <div v-if="tooManyScopes" class="form-row">
                         <div class="form-group col-12">
                             <div class="alert alert-danger" role="alert">
@@ -147,7 +147,39 @@
                     <div class="form-row">
                         <div class="form-group">
                             <div class="card-deck">
-                                <div class="card" v-for="(scope, index) in scopes">
+                                <div class="card" v-for="(scope, index) in userSettings.simpleScopes">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ scopeTitle(scope) }}</h5>
+                                        <p class="card-text">{{ scopeNumberOfDigits(scope) }}</p>
+                                        <p class="card-text">{{ scopeIsCarryOrBorrowEnabled(scope) }}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small class="text-right">
+                                            <button type="button" class="close" aria-label="Close" v-on:click="removeScope(index)">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="generate-simple-btn" class="btn btn-outline-primary btn-sm" v-on:click="generateTestPaper()">生成题目</button>
+                </form>
+
+                <form class="text-center" v-on:submit.prevent v-if="settingMode === 'advanced'">
+                    <div v-if="tooManyScopes" class="form-row">
+                        <div class="form-group col-12">
+                            <div class="alert alert-danger" role="alert">
+                                每次最多添加<strong>5组</strong>出题范围噢
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="card-deck">
+                                <div class="card" v-for="(scope, index) in userSettings.advancedScopes">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ scopeTitle(scope) }}</h5>
                                         <p class="card-text">{{ scopeLeftOperandRange(scope) }}</p>
@@ -166,10 +198,15 @@
                         </div>
                     </div>
 
-                    <button id="generate-btn" class="btn btn-outline-primary btn-sm" v-on:click="generateTestPaper()">生成题目</button>
+                    <button id="generate-advanced-btn" class="btn btn-outline-primary btn-sm" v-on:click="generateTestPaper()">生成题目</button>
+                </form>
+
+                <hr class="my-3" v-if="questions.length > 0">
+
+                <div class="mx-auto text-center" v-if="questions.length > 0">
                     <button id="toggle-answer-btn" class="btn btn-outline-secondary btn-sm" v-on:click="toggleAnswer()">显示答案</button>
                     <button id="export-pdf-btn" class="btn btn-outline-secondary btn-sm" v-on:click="exportToPdf()">导出PDF</button>
-                </form>
+                </div>
 
                 <table class="table table-striped my-3">
                     <tbody>

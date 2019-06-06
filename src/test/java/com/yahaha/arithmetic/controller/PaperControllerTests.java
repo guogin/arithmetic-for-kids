@@ -3,6 +3,7 @@ package com.yahaha.arithmetic.controller;
 import com.yahaha.arithmetic.model.AdvancedScope;
 import com.yahaha.arithmetic.model.Operator;
 import com.yahaha.arithmetic.model.Question;
+import com.yahaha.arithmetic.model.UserSetting;
 import com.yahaha.arithmetic.util.AdvancedGenerator;
 import com.yahaha.arithmetic.util.SimpleGenerator;
 import com.yahaha.arithmetic.util.TestUtil;
@@ -56,10 +57,11 @@ public class PaperControllerTests {
                 new Question(Operator.MINUS, 12, 5)
         );
 
-        List<AdvancedScope> advancedScopes = Arrays.asList(
+        UserSetting userSetting = new UserSetting();
+        userSetting.setAdvancedScopes(Arrays.asList(
                 new AdvancedScope(Operator.PLUS, 2, 2, 9, 2, 9, 11, 18),
                 new AdvancedScope(Operator.MINUS, 1, 11, 18, 2, 9, 2, 9)
-        );
+        ));
 
         given(advancedGenerator.generateQuestions())
                 .willReturn(questionList1)
@@ -67,7 +69,7 @@ public class PaperControllerTests {
 
         mvc.perform(post("/api/generateTestPaper")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(TestUtil.asJsonString(advancedScopes)))
+                .content(TestUtil.asJsonString(userSetting)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.questionList", hasSize(4)))
                 .andExpect(jsonPath("$.questionList[*].rightOperand", containsInAnyOrder(9, 6, 7, 5)))

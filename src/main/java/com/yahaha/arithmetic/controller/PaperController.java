@@ -2,7 +2,9 @@ package com.yahaha.arithmetic.controller;
 
 import com.yahaha.arithmetic.error.InvalidScopeException;
 import com.yahaha.arithmetic.model.AdvancedScope;
+import com.yahaha.arithmetic.model.SimpleScope;
 import com.yahaha.arithmetic.model.TestPaper;
+import com.yahaha.arithmetic.model.UserSetting;
 import com.yahaha.arithmetic.util.AdvancedGenerator;
 import com.yahaha.arithmetic.util.SimpleGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,26 +30,49 @@ public class PaperController {
     private MessageSource messageSource;
 
     @PostMapping(path = "/api/generateTestPaper", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TestPaper generateTestPaper(@RequestBody List<AdvancedScope> advancedScopes, Locale locale) {
+    public TestPaper generateTestPaper(@RequestBody UserSetting userSetting, Locale locale) {
         TestPaper testPaper = new TestPaper();
 
-        Iterator<AdvancedScope> iterator = advancedScopes.iterator();
-        int index = 1; // count from 1
+        if (userSetting.getAdvancedScopes() != null) {
+            Iterator<AdvancedScope> iterator = userSetting.getAdvancedScopes().iterator();
 
-        while (iterator.hasNext()) {
-            AdvancedScope advancedScope = iterator.next();
+            int index = 1; // count from 1
+            while (iterator.hasNext()) {
+                AdvancedScope advancedScope = iterator.next();
 
-            validateScope(advancedScope, locale);
-            advancedGenerator.setAdvancedScope(advancedScope);
+                validateScope(advancedScope, locale);
+                advancedGenerator.setAdvancedScope(advancedScope);
 
-            try {
-                testPaper.addQuestions(advancedGenerator.generateQuestions());
-            } catch (InvalidScopeException ex) {
-                String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{ index }, locale);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
+                try {
+                    testPaper.addQuestions(advancedGenerator.generateQuestions());
+                } catch (InvalidScopeException ex) {
+                    String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{index}, locale);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
+                }
+
+                index++;
             }
+        }
 
-            index++;
+        if (userSetting.getSimpleScopes() != null) {
+            Iterator<SimpleScope> iterator = userSetting.getSimpleScopes().iterator();
+
+            int index = 1;
+            while (iterator.hasNext()) {
+                SimpleScope simpleScope = iterator.next();
+
+                validateScope(simpleScope, locale);
+                simpleGenerator.setSimpleScope(simpleScope);
+
+                try {
+                    testPaper.addQuestions(simpleGenerator.generateQuestions());
+                } catch (InvalidScopeException ex) {
+                    String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{index}, locale);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
+                }
+
+                index++;
+            }
         }
 
         testPaper.shuffle();
@@ -57,48 +82,71 @@ public class PaperController {
 
     private void validateScope(AdvancedScope advancedScope, Locale locale) {
         boolean isValid = true;
-        String errorMsg = null;
+        String message = null;
 
         if (advancedScope.getOperator() == null) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.operator.message", null, locale);
+            message = messageSource.getMessage("invalid.operator.message", null, locale);
         } else if (advancedScope.getNumberOfQuestions() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("negative.number.of.questions.message", new Object[]{ advancedScope.getNumberOfQuestions() }, locale);
+            message = messageSource.getMessage("negative.number.of.questions.message", new Object[]{ advancedScope.getNumberOfQuestions() }, locale);
         } else if (advancedScope.getNumberOfQuestions() > 1000) {
             isValid = false;
-            errorMsg = messageSource.getMessage("too.many.questions", new Object[]{ advancedScope.getNumberOfQuestions() }, locale);
+            message = messageSource.getMessage("too.many.questions", new Object[]{ advancedScope.getNumberOfQuestions() }, locale);
         } else if (advancedScope.getMinLeftOperand() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinLeftOperand() }, locale);
+            message = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinLeftOperand() }, locale);
         } else if (advancedScope.getMaxLeftOperand() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxLeftOperand() }, locale);
+            message = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxLeftOperand() }, locale);
         } else if (advancedScope.getMinLeftOperand() > advancedScope.getMaxLeftOperand()) {
             isValid = false;
-            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinLeftOperand(), advancedScope.getMaxLeftOperand() }, locale);
+            message = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinLeftOperand(), advancedScope.getMaxLeftOperand() }, locale);
         } else if (advancedScope.getMinRightOperand() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinRightOperand() }, locale);
+            message = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinRightOperand() }, locale);
         } else if (advancedScope.getMaxRightOperand() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxRightOperand() }, locale);
+            message = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxRightOperand() }, locale);
         } else if (advancedScope.getMinRightOperand() > advancedScope.getMaxRightOperand()) {
             isValid = false;
-            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinRightOperand(), advancedScope.getMaxRightOperand() }, locale);
+            message = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinRightOperand(), advancedScope.getMaxRightOperand() }, locale);
         } else if (advancedScope.getMinAnswer() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinAnswer() }, locale);
+            message = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMinAnswer() }, locale);
         } else if (advancedScope.getMaxAnswer() < 0) {
             isValid = false;
-            errorMsg = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxAnswer() }, locale);
+            message = messageSource.getMessage("invalid.parameter", new Object[]{ advancedScope.getMaxAnswer() }, locale);
         } else if (advancedScope.getMinAnswer() > advancedScope.getMaxAnswer()) {
             isValid = false;
-            errorMsg = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinAnswer(), advancedScope.getMaxAnswer() }, locale);
+            message = messageSource.getMessage("min.is.greater.than.max", new Object[]{ advancedScope.getMinAnswer(), advancedScope.getMaxAnswer() }, locale);
         }
 
         if (!isValid) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
+    private void validateScope(SimpleScope simpleScope, Locale locale) {
+        boolean isValid = true;
+        String message = null;
+
+        if (simpleScope.getOperator() == null) {
+            isValid = false;
+            message = messageSource.getMessage("invalid.operator.message", null, locale);
+        } else if (simpleScope.getNumberOfQuestions() < 0) {
+            isValid = false;
+            message = messageSource.getMessage("negative.number.of.questions.message", new Object[]{ simpleScope.getNumberOfQuestions() }, locale);
+        } else if (simpleScope.getNumberOfQuestions() > 1000) {
+            isValid = false;
+            message = messageSource.getMessage("too.many.questions", new Object[]{ simpleScope.getNumberOfQuestions() }, locale);
+        } else if (simpleScope.getNumberOfDigits() < 0 || simpleScope.getNumberOfDigits() > 8) {
+            isValid = false;
+            message = messageSource.getMessage("invalid.number.of.digits", new Object[]{ simpleScope.getNumberOfDigits() }, locale);
+        }
+
+        if (!isValid) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
     }
 }
