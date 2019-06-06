@@ -243,7 +243,7 @@ $(function() {
 
                     var doc = new jsPDF();
                     doc.table(1, 1, tableData, undefined, {autoSize: true, printHeaders: false});
-                    doc.save("questions.pdf", undefined);
+                    doc.save("TestPaper.pdf", undefined);
                 }
             }
         }
