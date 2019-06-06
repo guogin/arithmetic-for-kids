@@ -52,7 +52,9 @@ public class AdvancedGenerator implements Generator {
                 Question question = new Question(getAdvancedScope().getOperator(), leftOp, rightOp);
                 questionList.add(question);
             } else { //cannot generateQuestions such a number
-                throw new InvalidScopeException(getAdvancedScope(), minRightOp, maxRightOp, InvalidScopeException.DERIVED_MIN_GT_MAX);
+                throw new InvalidScopeException(InvalidScopeException.DERIVED_MIN_GT_MAX,
+                        String.format("Can't generate number because derived range is [%1$d, %2$d] where %1$d > %2$d. Details: left operand = %3$d, scope = %4$s",
+                                minRightOp, maxRightOp, leftOp, getAdvancedScope().toString()));
             }
         }
 

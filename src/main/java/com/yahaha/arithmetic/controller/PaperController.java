@@ -4,6 +4,7 @@ import com.yahaha.arithmetic.error.InvalidScopeException;
 import com.yahaha.arithmetic.model.AdvancedScope;
 import com.yahaha.arithmetic.model.TestPaper;
 import com.yahaha.arithmetic.util.AdvancedGenerator;
+import com.yahaha.arithmetic.util.SimpleGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,9 @@ import java.util.Locale;
 public class PaperController {
     @Autowired
     private AdvancedGenerator advancedGenerator;
+
+    @Autowired
+    private SimpleGenerator simpleGenerator;
 
     @Autowired
     private MessageSource messageSource;

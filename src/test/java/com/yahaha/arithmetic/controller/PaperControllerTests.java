@@ -4,6 +4,7 @@ import com.yahaha.arithmetic.model.AdvancedScope;
 import com.yahaha.arithmetic.model.Operator;
 import com.yahaha.arithmetic.model.Question;
 import com.yahaha.arithmetic.util.AdvancedGenerator;
+import com.yahaha.arithmetic.util.SimpleGenerator;
 import com.yahaha.arithmetic.util.TestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,9 @@ public class PaperControllerTests {
 
     @MockBean
     private AdvancedGenerator advancedGenerator;
+
+    @MockBean
+    private SimpleGenerator simpleGenerator;
 
     @Before
     public void setup() {
