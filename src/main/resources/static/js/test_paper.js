@@ -92,7 +92,7 @@ $(function() {
                             operator : scope.operator,
                             numberOfQuestions : scope.numberOfQuestions,
                             numberOfDigits : scope.numberOfDigits,
-                            carryOrBorrowEnabled : scope.isCarryOrBorrowEnabled
+                            carryOrBorrowEnabled : scope.carryOrBorrowEnabled
                         });
                     }
                 }
