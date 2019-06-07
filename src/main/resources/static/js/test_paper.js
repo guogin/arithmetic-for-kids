@@ -20,13 +20,8 @@ $(function() {
                 minAnswer : null,
                 maxAnswer : null
             },
-            userSettings : {
-                simpleScopes : [],
-                advancedScopes : []
-            },
-            questions : [
-
-            ],
+            scopes : [],
+            questions : [],
             tooManyScopes : false,
             showAnswer : false,
             settingMode: 'simple'
@@ -36,21 +31,16 @@ $(function() {
                 this.settingMode = mode;
             },
             addScope: function() {
-                if (this.settingMode === 'advanced') {
-                    if (!this.validateForm(this.advancedForm)) {
-                        return;
-                    }
-                } else {
-                    if (!this.validateForm(this.simpleForm)) {
-                        return;
-                    }
+                if (!this.validateForm(this.settingMode === 'advanced' ? this.advancedForm : this.simpleForm)) {
+                    return;
                 }
                 if (this.userAddedTooManyScopes()) {
                     this.tooManyScopes = true;
                     return;
                 }
                 if (this.settingMode === 'advanced') {
-                    this.userSettings.advancedScopes.push({
+                    this.scopes.push({
+                        mode : 'advanced',
                         operator: this.advancedForm.operator,
                         numberOfQuestions: this.advancedForm.numberOfQuestions,
                         minLeftOperand: this.advancedForm.minLeftOperand,
@@ -61,7 +51,8 @@ $(function() {
                         maxAnswer: this.advancedForm.maxAnswer
                     });
                 } else {
-                    this.userSettings.simpleScopes.push({
+                    this.scopes.push({
+                        mode : 'simple',
                         operator : this.simpleForm.operator,
                         numberOfQuestions : this.simpleForm.numberOfQuestions,
                         numberOfDigits : this.simpleForm.numberOfDigits,
@@ -70,31 +61,40 @@ $(function() {
                 }
             },
             removeScope: function(index) {
-                if (this.settingMode === 'advanced') {
-                    this.userSettings.advancedScopes.splice(index, 1);
-                } else {
-                    this.userSettings.simpleScopes.splice(index, 1);
-                }
+                this.scopes.splice(index, 1);
                 this.tooManyScopes = this.userAddedTooManyScopes();
             },
             generateTestPaper: function() {
-                var parameter = {};
-                if (this.settingMode === 'advanced') {
-                    if (this.userSettings.advancedScopes.length === 0) {
-                        return;
+                var parameter = {
+                    simpleScopes : [],
+                    advancedScopes :[]
+                };
+
+                if (this.scopes.length === 0) {
+                    return;
+                }
+
+                for (var i = 0; i < this.scopes.length; ++i) {
+                    var scope = this.scopes[i];
+                    if (scope.mode === 'advanced') {
+                        parameter.advancedScopes.push({
+                            operator: scope.operator,
+                            numberOfQuestions: scope.numberOfQuestions,
+                            minLeftOperand: scope.minLeftOperand,
+                            maxLeftOperand: scope.maxLeftOperand,
+                            minRightOperand: scope.minRightOperand,
+                            maxRightOperand: scope.maxRightOperand,
+                            minAnswer: scope.minAnswer,
+                            maxAnswer: scope.maxAnswer
+                        });
+                    } else {
+                        parameter.simpleScopes.push({
+                            operator : scope.operator,
+                            numberOfQuestions : scope.numberOfQuestions,
+                            numberOfDigits : scope.numberOfDigits,
+                            carryOrBorrowEnabled : scope.isCarryOrBorrowEnabled
+                        });
                     }
-                    parameter = {
-                        simpleScopes : [],
-                        advancedScopes : this.userSettings.advancedScopes
-                    };
-                } else {
-                    if (this.userSettings.simpleScopes.length === 0) {
-                        return;
-                    }
-                    parameter = {
-                        simpleScopes : this.userSettings.simpleScopes,
-                        advancedScopes : []
-                    };
                 }
 
                 $.ajax({
@@ -220,7 +220,7 @@ $(function() {
                 return true;
             },
             userAddedTooManyScopes : function() {
-                return (this.userSettings.advancedScopes.length >= 5) || (this.userSettings.simpleScopes.length >= 5);
+                return this.scopes.length >= 5;
             },
             formatQuestion : function(question) {
                 if (question === null) {
