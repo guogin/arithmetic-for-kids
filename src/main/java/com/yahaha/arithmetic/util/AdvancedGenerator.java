@@ -32,8 +32,20 @@ public class AdvancedGenerator implements Generator {
 
         for (int i = 0; i < getAdvancedScope().getNumberOfQuestions(); ++i) {
             // First generate one number
-            int minLeftOp = getAdvancedScope().getMinLeftOperand();
-            int maxLeftOp = getAdvancedScope().getMaxLeftOperand();
+            int minLeftOp = getAdvancedScope().getOperator() == Operator.PLUS ?
+                    getAdvancedScope().getMinAnswer() - getAdvancedScope().getMaxRightOperand() :
+                    getAdvancedScope().getMinRightOperand() + getAdvancedScope().getMinAnswer();
+            int maxLeftOp = getAdvancedScope().getOperator() == Operator.PLUS ?
+                    getAdvancedScope().getMaxAnswer() - getAdvancedScope().getMinRightOperand() :
+                    getAdvancedScope().getMaxRightOperand() + getAdvancedScope().getMaxAnswer();
+            minLeftOp = max(minLeftOp, getAdvancedScope().getMinLeftOperand());
+            maxLeftOp = max(min(maxLeftOp, getAdvancedScope().getMaxLeftOperand()), 0);
+
+            if (minLeftOp > maxLeftOp) {
+                throw new InvalidScopeException(InvalidScopeException.DERIVED_MIN_GT_MAX,
+                        String.format("Can't generate the left operand because derived range is [%1$d, %2$d] where %1$d > %2$d. Details: scope = %3$s",
+                                minLeftOp, maxLeftOp, getAdvancedScope().toString()));
+            }
             int leftOp = randomWithRange(minLeftOp, maxLeftOp);
 
             // Then derive the boundary of the other number
@@ -53,7 +65,7 @@ public class AdvancedGenerator implements Generator {
                 questionList.add(question);
             } else { //cannot generateQuestions such a number
                 throw new InvalidScopeException(InvalidScopeException.DERIVED_MIN_GT_MAX,
-                        String.format("Can't generate number because derived range is [%1$d, %2$d] where %1$d > %2$d. Details: left operand = %3$d, scope = %4$s",
+                        String.format("Can't generate the right operand because derived range is [%1$d, %2$d] where %1$d > %2$d. Details: left operand = %3$d, scope = %4$s",
                                 minRightOp, maxRightOp, leftOp, getAdvancedScope().toString()));
             }
         }
