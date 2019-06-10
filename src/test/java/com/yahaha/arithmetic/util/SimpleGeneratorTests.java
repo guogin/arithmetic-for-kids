@@ -3,10 +3,12 @@ package com.yahaha.arithmetic.util;
 import com.yahaha.arithmetic.model.Operator;
 import com.yahaha.arithmetic.model.Question;
 import com.yahaha.arithmetic.model.SimpleScope;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SimpleGeneratorTests {
     @Test
@@ -19,7 +21,7 @@ public class SimpleGeneratorTests {
         List<Question> questionList = generator.generateQuestions();
 
         for (Question question : questionList) {
-            Assert.assertEquals(true, NumberUtil.hasCarryOrBorrowOperation(question.getLeftOperand(), question.getRightOperand(), question.getOperator()));
+            assertTrue(NumberUtil.hasCarryOrBorrowOperation(question.getLeftOperand(), question.getRightOperand(), question.getOperator()));
         }
     }
 
@@ -33,7 +35,8 @@ public class SimpleGeneratorTests {
         List<Question> questionList = generator.generateQuestions();
 
         for (Question question : questionList) {
-            Assert.assertEquals(true, NumberUtil.hasCarryOrBorrowOperation(question.getLeftOperand(), question.getRightOperand(), question.getOperator()));
+            assertTrue(question.getLeftOperand() >= question.getRightOperand());
+            assertTrue(NumberUtil.hasCarryOrBorrowOperation(question.getLeftOperand(), question.getRightOperand(), question.getOperator()));
         }
     }
 
@@ -47,7 +50,7 @@ public class SimpleGeneratorTests {
         List<Question> questionList = generator.generateQuestions();
 
         for (Question question : questionList) {
-            Assert.assertEquals(false, NumberUtil.hasCarryOrBorrowOperation(question.getLeftOperand(), question.getRightOperand(), question.getOperator()));
+            assertFalse(NumberUtil.hasCarryOrBorrowOperation(question.getLeftOperand(), question.getRightOperand(), question.getOperator()));
         }
     }
 
@@ -61,7 +64,8 @@ public class SimpleGeneratorTests {
         List<Question> questionList = generator.generateQuestions();
 
         for (Question question : questionList) {
-            Assert.assertEquals(false, NumberUtil.hasCarryOrBorrowOperation(question.getLeftOperand(), question.getRightOperand(), question.getOperator()));
+            assertTrue(question.getLeftOperand() >= question.getRightOperand());
+            assertFalse(NumberUtil.hasCarryOrBorrowOperation(question.getLeftOperand(), question.getRightOperand(), question.getOperator()));
         }
     }
 }
