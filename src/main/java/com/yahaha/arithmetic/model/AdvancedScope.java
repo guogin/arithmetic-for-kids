@@ -1,10 +1,12 @@
 package com.yahaha.arithmetic.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.Min;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class AdvancedScope extends Scope {
     @Min(0)
     private int minLeftOperand;
