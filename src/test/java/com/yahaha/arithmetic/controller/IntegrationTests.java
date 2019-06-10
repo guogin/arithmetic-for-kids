@@ -18,7 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -30,6 +34,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class IntegrationTests {
     @Autowired
     private MockMvc mvc;
+
+    @Test
+    public void whenCalled_thenShouldResponseWithTestPaper() throws Exception {
+        UserSetting userSetting = new UserSetting();
+
+        userSetting.setAdvancedScopes(Arrays.asList(
+                new AdvancedScope(Operator.PLUS, 2, 2, 9, 2, 9, 11, 18),
+                new AdvancedScope(Operator.MINUS, 2, 11, 18, 2, 9, 2, 9)
+        ));
+
+        mvc.perform(post("/api/generateTestPaper")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(TestUtil.asJsonString(userSetting)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.questionList", hasSize(4)))
+                .andExpect(jsonPath("$.questionList[*].expression", containsInAnyOrder(
+                        stringContainsInOrder(Arrays.asList("+", "=")),
+                        stringContainsInOrder(Arrays.asList("+", "=")),
+                        stringContainsInOrder(Arrays.asList("-", "=")),
+                        stringContainsInOrder(Arrays.asList("-", "="))
+                )));
+    }
 
     @Test
     public void whenInvalidParameterIsProvided_thenShouldResponseWithErrorMessage() throws Exception {

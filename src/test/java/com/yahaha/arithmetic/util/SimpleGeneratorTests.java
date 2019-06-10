@@ -14,7 +14,7 @@ public class SimpleGeneratorTests {
         SimpleScope simpleScope = new SimpleScope(Operator.PLUS, 1000, 5, true);
 
         SimpleGenerator generator = new SimpleGenerator();
-        generator.setSimpleScope(simpleScope);
+        generator.setScope(simpleScope);
 
         List<Question> questionList = generator.generateQuestions();
 
@@ -28,7 +28,7 @@ public class SimpleGeneratorTests {
         SimpleScope simpleScope = new SimpleScope(Operator.MINUS, 1000, 5, true);
 
         SimpleGenerator generator = new SimpleGenerator();
-        generator.setSimpleScope(simpleScope);
+        generator.setScope(simpleScope);
 
         List<Question> questionList = generator.generateQuestions();
 
@@ -42,7 +42,7 @@ public class SimpleGeneratorTests {
         SimpleScope simpleScope = new SimpleScope(Operator.PLUS, 1000, 5, false);
 
         SimpleGenerator generator = new SimpleGenerator();
-        generator.setSimpleScope(simpleScope);
+        generator.setScope(simpleScope);
 
         List<Question> questionList = generator.generateQuestions();
 
@@ -56,7 +56,7 @@ public class SimpleGeneratorTests {
         SimpleScope simpleScope = new SimpleScope(Operator.MINUS, 1000, 5, false);
 
         SimpleGenerator generator = new SimpleGenerator();
-        generator.setSimpleScope(simpleScope);
+        generator.setScope(simpleScope);
 
         List<Question> questionList = generator.generateQuestions();
 

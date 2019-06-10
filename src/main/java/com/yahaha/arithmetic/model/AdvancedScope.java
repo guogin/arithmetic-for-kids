@@ -1,25 +1,11 @@
 package com.yahaha.arithmetic.model;
 
-import lombok.*;
+import lombok.Data;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
-@Setter
-@Getter
-@EqualsAndHashCode
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-public class AdvancedScope {
-    @NotNull
-    private Operator operator;
-
-    @Min(1)
-    @Max(1000)
-    private int numberOfQuestions;
-
+@Data
+public class AdvancedScope extends Scope {
     @Min(0)
     private int minLeftOperand;
 
@@ -37,4 +23,17 @@ public class AdvancedScope {
 
     @Min(0)
     private int maxAnswer;
+
+    public AdvancedScope(Operator operator, int numberOfQuestions,
+                         int minLeftOperand, int maxLeftOperand,
+                         int minRightOperand, int maxRightOperand,
+                         int minAnswer, int maxAnswer) {
+        super(operator, numberOfQuestions);
+        this.minLeftOperand = minLeftOperand;
+        this.maxLeftOperand = maxLeftOperand;
+        this.minRightOperand = minRightOperand;
+        this.maxRightOperand = maxRightOperand;
+        this.minAnswer = minAnswer;
+        this.maxAnswer = maxAnswer;
+    }
 }

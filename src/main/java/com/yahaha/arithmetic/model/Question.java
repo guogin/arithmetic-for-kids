@@ -1,5 +1,6 @@
 package com.yahaha.arithmetic.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 @Getter
@@ -9,8 +10,11 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class Question {
+    @JsonIgnore
     private Operator operator;
+    @JsonIgnore
     private int leftOperand;
+    @JsonIgnore
     private int rightOperand;
 
     public int getAnswer() {

@@ -15,7 +15,7 @@ public class AdvancedGeneratorTests {
         AdvancedScope advancedScope = new AdvancedScope(Operator.PLUS, 1000, 11, 9999, 11, 9999, 300, 9999);
 
         AdvancedGenerator advancedGenerator = new AdvancedGenerator();
-        advancedGenerator.setAdvancedScope(advancedScope);
+        advancedGenerator.setScope(advancedScope);
 
         List<Question> questionList = advancedGenerator.generateQuestions();
 
@@ -34,7 +34,7 @@ public class AdvancedGeneratorTests {
         AdvancedScope advancedScope = new AdvancedScope(Operator.MINUS, 1000, 200, 9999, 100, 9999, 100, 999);
 
         AdvancedGenerator advancedGenerator = new AdvancedGenerator();
-        advancedGenerator.setAdvancedScope(advancedScope);
+        advancedGenerator.setScope(advancedScope);
 
         List<Question> questionList = advancedGenerator.generateQuestions();
 

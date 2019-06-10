@@ -6,6 +6,8 @@ import com.yahaha.arithmetic.model.SimpleScope;
 import com.yahaha.arithmetic.model.TestPaper;
 import com.yahaha.arithmetic.model.UserSetting;
 import com.yahaha.arithmetic.util.AdvancedGenerator;
+import com.yahaha.arithmetic.util.Generator;
+import com.yahaha.arithmetic.util.GeneratorFactory;
 import com.yahaha.arithmetic.util.SimpleGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -21,10 +23,7 @@ import java.util.Locale;
 @RestController
 public class PaperController {
     @Autowired
-    private AdvancedGenerator advancedGenerator;
-
-    @Autowired
-    private SimpleGenerator simpleGenerator;
+    private GeneratorFactory generatorFactory;
 
     @Autowired
     private MessageSource messageSource;
@@ -34,44 +33,33 @@ public class PaperController {
         TestPaper testPaper = new TestPaper();
 
         if (userSetting.getAdvancedScopes() != null) {
-            Iterator<AdvancedScope> iterator = userSetting.getAdvancedScopes().iterator();
+            for (AdvancedScope scope : userSetting.getAdvancedScopes()) {
+                validateScope(scope, locale);
 
-            int index = 1; // count from 1
-            while (iterator.hasNext()) {
-                AdvancedScope advancedScope = iterator.next();
-
-                validateScope(advancedScope, locale);
-                advancedGenerator.setAdvancedScope(advancedScope);
+                Generator generator = generatorFactory.createGenerator(scope);
 
                 try {
-                    testPaper.addQuestions(advancedGenerator.generateQuestions());
+                    testPaper.addQuestions(generator.generateQuestions());
                 } catch (InvalidScopeException ex) {
-                    String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{index}, locale);
+                    String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{ ex.getMessage() }, locale);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
                 }
 
-                index++;
             }
         }
 
         if (userSetting.getSimpleScopes() != null) {
-            Iterator<SimpleScope> iterator = userSetting.getSimpleScopes().iterator();
+            for (SimpleScope scope : userSetting.getSimpleScopes()) {
+                validateScope(scope, locale);
 
-            int index = 1;
-            while (iterator.hasNext()) {
-                SimpleScope simpleScope = iterator.next();
-
-                validateScope(simpleScope, locale);
-                simpleGenerator.setSimpleScope(simpleScope);
+                Generator generator = generatorFactory.createGenerator(scope);
 
                 try {
-                    testPaper.addQuestions(simpleGenerator.generateQuestions());
+                    testPaper.addQuestions(generator.generateQuestions());
                 } catch (InvalidScopeException ex) {
-                    String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{index}, locale);
+                    String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{ ex.getMessage() }, locale);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
                 }
-
-                index++;
             }
         }
 
