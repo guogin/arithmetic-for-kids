@@ -24,7 +24,16 @@ $(function() {
             questions : [],
             tooManyScopes : false,
             showAnswer : false,
-            settingMode: 'simple'
+            settingMode: 'simple',
+            uiControl : {
+                leftOperandLabel: "加数",
+                rightOperandLabel: "加数",
+                answerLabel: "和",
+                isMinLeftOperandGreaterThanMax : false,
+                isMinRightOperandGreaterThanMax : false,
+                isMinAnswerGreaterThanMax : false
+            },
+            errorMessage : ""
         },
         methods: {
             switchSettingModeTo : function(mode) {
@@ -117,7 +126,7 @@ $(function() {
                         }
                     }, this),
                     error : $.proxy(function(xhr, textStatus, errorThrown) {
-                        $('#error-message').text(xhr.responseJSON.message || "服务器检查了你的参数，它总觉得哪里不对，但又说不上来...")
+                        this.errorMessage = xhr.responseJSON.message || "服务器检查了你的参数，它总觉得哪里不对，但又说不上来...";
                         $('#error-message-dialog').modal();
                     }, this),
                     contentType: "application/json",
@@ -126,13 +135,13 @@ $(function() {
             },
             onOperatorChange: function(event) {
                 if (this.advancedForm.operator === "PLUS") {
-                    $('#labelLeftOperand').text("加数");
-                    $('#labelRightOperand').text("加数");
-                    $('#labelAnswer').text("和");
+                    this.uiControl.leftOperandLabel = "加数";
+                    this.uiControl.rightOperandLabel = "加数";
+                    this.uiControl.answerLabel = "和";
                 } else {
-                    $('#labelLeftOperand').text("被减数");
-                    $('#labelRightOperand').text("减数");
-                    $('#labelAnswer').text("差");
+                    this.uiControl.leftOperandLabel = "被减数";
+                    this.uiControl.rightOperandLabel = "减数";
+                    this.uiControl.answerLabel = "差";
                 }
             },
             scopeTitle : function(scope) {
@@ -179,13 +188,18 @@ $(function() {
                     if (form.maxLeftOperand == null || form.maxLeftOperand <= 0) {
                         return false;
                     }
-                    if (!this.validateMinMax(form, "minLeftOperand", "maxLeftOperand")) {
+                    this.uiControl.isMinLeftOperandGreaterThanMax = parseInt(form.minLeftOperand, 10) > parseInt(form.maxLeftOperand, 10);
+                    if (this.uiControl.isMinLeftOperandGreaterThanMax) {
                         return false;
                     }
                     if (form.minRightOperand == null || form.minRightOperand <= 0) {
                         return false;
                     }
-                    if (!this.validateMinMax(form, "minRightOperand", "maxRightOperand")) {
+                    if (form.maxRightOperand == null || form.maxRightOperand <= 0) {
+                        return false;
+                    }
+                    this.uiControl.isMinRightOperandGreaterThanMax = parseInt(form.minRightOperand, 10) > parseInt(form.maxRightOperand, 10);
+                    if (this.uiControl.isMinRightOperandGreaterThanMax) {
                         return false;
                     }
                     if (form.minAnswer == null || form.minAnswer <= 0) {
@@ -194,7 +208,8 @@ $(function() {
                     if (form.maxAnswer == null || form.maxAnswer <= 0) {
                         return false;
                     }
-                    if (!this.validateMinMax(form, "minAnswer", "maxAnswer")) {
+                    this.uiControl.isMinAnswerGreaterThanMax = parseInt(form.minAnswer, 10) > parseInt(form.maxAnswer, 10);
+                    if (this.uiControl.isMinAnswerGreaterThanMax) {
                         return false;
                     }
                 } else {
@@ -202,21 +217,6 @@ $(function() {
                         return false;
                     }
                 }
-                return true;
-            },
-            validateMinMax : function(advancedForm, minProperty, maxProperty) {
-                var idField = "#" + minProperty + "," + "#" + maxProperty;
-                var idErr = "#" + minProperty.substring(3);
-
-                if (parseInt(advancedForm[minProperty], 10) > parseInt(advancedForm[maxProperty], 10)) {
-                    $(idField).addClass('is-invalid');
-                    $(idErr).removeClass('d-none');
-                    return false;
-                } else {
-                    $(idField).removeClass('is-invalid');
-                    $(idErr).addClass('d-none');
-                }
-
                 return true;
             },
             userAddedTooManyScopes : function() {

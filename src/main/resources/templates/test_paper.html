@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <form class="form-inline" v-on:submit.prevent v-if="settingMode === 'simple'">
+                <form class="form-inline" v-if="settingMode === 'simple'" v-on:submit.prevent>
                     <div class="form-group">
                         <label for="operatorTypeSimple" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2" >运算</label>
                         <select id="operatorTypeSimple" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" v-model="simpleForm.operator" required>
@@ -74,7 +74,7 @@
                     <button id="add-simple-scope-btn" class="btn btn-outline-primary btn-sm mb-sm-2" v-on:click="addScope()">加入出题范围</button>
                 </form>
 
-                <form class="form-inline" v-on:submit.prevent v-if="settingMode === 'advanced'">
+                <form class="form-inline" v-else v-on:submit.prevent>
                     <div class="form-group">
                         <label for="operatorType" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2" >运算</label>
                         <select id="operatorType" class="form-control form-control-sm form-control-compact mr-sm-2 mb-sm-2" v-model="advancedForm.operator" v-on:change="onOperatorChange($event)" required>
@@ -89,47 +89,47 @@
                     </div>
 
                     <div class="form-group">
-                    <label id="labelLeftOperand" for="leftOperand" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">加数</label>
+                    <label id="labelLeftOperand" for="leftOperand" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">{{ uiControl.leftOperandLabel }}</label>
                     <div class="input-group input-group-sm input-group-compact mr-sm-2 mb-sm-2" id="leftOperand">
                         <div class="input-group-prepend">
                             <div class="input-group-text">从</div>
                         </div>
-                        <input id="minLeftOperand" type="number" min="0" class="form-control" placeholder="最小" v-model="advancedForm.minLeftOperand" required>
+                        <input id="minLeftOperand" type="number" min="0" class="form-control" v-bind:class="{ 'is-invalid': uiControl.isMinLeftOperandGreaterThanMax }" placeholder="最小" v-model="advancedForm.minLeftOperand" required>
                         <div class="input-group-prepend">
                             <div class="input-group-text">到</div>
                         </div>
-                        <input id="maxLeftOperand" type="number" min="0" class="form-control" placeholder="最大" v-model="advancedForm.maxLeftOperand" required>
-                        <div id="leftOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                        <input id="maxLeftOperand" type="number" min="0" class="form-control" v-bind:class="{ 'is-invalid': uiControl.isMinLeftOperandGreaterThanMax }" placeholder="最大" v-model="advancedForm.maxLeftOperand" required>
+                        <div id="leftOperandValidationError" class="invalid-feedback" v-bind:class="{ 'd-none': !uiControl.isMinLeftOperandGreaterThanMax}">最小值不可以比最大值大噢</div>
                     </div>
                     </div>
 
                     <div class="form-group">
-                    <label id="labelRightOperand" for="rightOperand" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">加数</label>
+                    <label id="labelRightOperand" for="rightOperand" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2">{{ uiControl.rightOperandLabel }}</label>
                     <div class="input-group input-group-sm input-group-compact mr-sm-2 mb-sm-2" id="rightOperand">
                         <div class="input-group-prepend">
                             <div class="input-group-text">从</div>
                         </div>
-                        <input id="minRightOperand" type="number" min="0" class="form-control" placeholder="最小" v-model="advancedForm.minRightOperand" required>
+                        <input id="minRightOperand" type="number" min="0" class="form-control" v-bind:class="{ 'is-invalid': uiControl.isMinRightOperandGreaterThanMax }" placeholder="最小" v-model="advancedForm.minRightOperand" required>
                         <div class="input-group-prepend">
                             <div class="input-group-text">到</div>
                         </div>
-                        <input id="maxRightOperand" type="number" min="0" class="form-control" placeholder="最大" v-model="advancedForm.maxRightOperand" required>
-                        <div id="rightOperandValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                        <input id="maxRightOperand" type="number" min="0" class="form-control" v-bind:class="{ 'is-invalid': uiControl.isMinRightOperandGreaterThanMax }" placeholder="最大" v-model="advancedForm.maxRightOperand" required>
+                        <div id="rightOperandValidationError" class="invalid-feedback" v-bind:class="{ 'd-none': !uiControl.isMinRightOperandGreaterThanMax }">最小值不可以比最大值大噢</div>
                     </div>
                     </div>
 
                     <div class="form-group">
-                    <label id="labelAnswer" for="answer" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2 mb-sm-2">和</label>
+                    <label id="labelAnswer" for="answer" class="col-form-label col-form-label-sm mr-sm-1 mb-sm-2 mb-sm-2">{{ uiControl.answerLabel }}</label>
                     <div class="input-group input-group-sm input-group-compact mr-sm-2 mb-sm-2 mb-sm-2" id="answer">
                         <div class="input-group-prepend">
                             <div class="input-group-text">从</div>
                         </div>
-                        <input id="minAnswer" type="number" min="0" class="form-control" placeholder="最小" v-model="advancedForm.minAnswer" required>
+                        <input id="minAnswer" type="number" min="0" class="form-control" v-bind:class="{ 'is-invalid': uiControl.isMinAnswerGreaterThanMax }" placeholder="最小" v-model="advancedForm.minAnswer" required>
                         <div class="input-group-prepend">
                             <div class="input-group-text">到</div>
                         </div>
-                        <input id="maxAnswer" type="number" min="0" class="form-control" placeholder="最大" v-model="advancedForm.maxAnswer" required>
-                        <div id="answerValidationError" class="d-none invalid-feedback">最小值不可以比最大值大噢</div>
+                        <input id="maxAnswer" type="number" min="0" class="form-control" v-bind:class="{ 'is-invalid': uiControl.isMinAnswerGreaterThanMax }" placeholder="最大" v-model="advancedForm.maxAnswer" required>
+                        <div id="answerValidationError" class="invalid-feedback" v-bind:class="{ 'd-none': !uiControl.isMinAnswerGreaterThanMax }">最小值不可以比最大值大噢</div>
                     </div>
                     </div>
 
@@ -204,7 +204,7 @@
                         </button>
                     </div>
                     <div id="error-message" class="modal-body">
-
+                        {{ errorMessage }}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">
