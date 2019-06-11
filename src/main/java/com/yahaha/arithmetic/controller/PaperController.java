@@ -5,23 +5,25 @@ import com.yahaha.arithmetic.model.AdvancedScope;
 import com.yahaha.arithmetic.model.SimpleScope;
 import com.yahaha.arithmetic.model.TestPaper;
 import com.yahaha.arithmetic.model.UserSetting;
-import com.yahaha.arithmetic.util.AdvancedGenerator;
 import com.yahaha.arithmetic.util.Generator;
 import com.yahaha.arithmetic.util.GeneratorFactory;
-import com.yahaha.arithmetic.util.SimpleGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
 @RestController
 public class PaperController {
+    private static Logger logger = LoggerFactory.getLogger(PaperController.class);
+
     @Autowired
     private GeneratorFactory generatorFactory;
 
@@ -41,7 +43,8 @@ public class PaperController {
                 try {
                     testPaper.addQuestions(generator.generateQuestions());
                 } catch (InvalidScopeException ex) {
-                    String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{ ex.getMessage() }, locale);
+                    logger.error(ex.getMessage());
+                    String errorMsg = messageSource.getMessage(ex.getI18nMessageKey(), ex.getArguments(), locale);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
                 }
 
@@ -57,7 +60,8 @@ public class PaperController {
                 try {
                     testPaper.addQuestions(generator.generateQuestions());
                 } catch (InvalidScopeException ex) {
-                    String errorMsg = messageSource.getMessage("invalid.scope.detail", new Object[]{ ex.getMessage() }, locale);
+                    logger.error(ex.getMessage());
+                    String errorMsg = messageSource.getMessage(ex.getI18nMessageKey(), ex.getArguments(), locale);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
                 }
             }

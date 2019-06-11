@@ -42,9 +42,9 @@ public class AdvancedGenerator implements Generator {
             maxLeftOp = max(min(maxLeftOp, getScope().getMaxLeftOperand()), 0);
 
             if (minLeftOp > maxLeftOp) {
-                throw new InvalidScopeException(InvalidScopeException.DERIVED_MIN_GT_MAX,
-                        String.format("Can't generate the left operand because derived range is [%1$d, %2$d] where %1$d > %2$d. Details: scope = %3$s",
-                                minLeftOp, maxLeftOp, getScope().toString()));
+                throw new InvalidScopeException(
+                        String.format("Can't generate the left operand because derived range is [%1$d, %2$d] where %1$d > %2$d. Details: scope = %3$s", minLeftOp, maxLeftOp, getScope().toString()),
+                        "derived.min.gt.max", getScope().getOperator() == Operator.PLUS ? "+" : "-", getScope().toString());
             }
             int leftOp = randomWithRange(minLeftOp, maxLeftOp);
 
@@ -64,9 +64,9 @@ public class AdvancedGenerator implements Generator {
                 Question question = new Question(getScope().getOperator(), leftOp, rightOp);
                 questionList.add(question);
             } else { //cannot generateQuestions such a number
-                throw new InvalidScopeException(InvalidScopeException.DERIVED_MIN_GT_MAX,
-                        String.format("Can't generate the right operand because derived range is [%1$d, %2$d] where %1$d > %2$d. Details: left operand = %3$d, scope = %4$s",
-                                minRightOp, maxRightOp, leftOp, getScope().toString()));
+                throw new InvalidScopeException(
+                        String.format("Can't generate the right operand because derived range is [%1$d, %2$d] where %1$d > %2$d. Details: left operand = %3$d, scope = %4$s", minRightOp, maxRightOp, leftOp, getScope().toString()),
+                        "derived.min.gt.max", getScope().getOperator() == Operator.PLUS ? "+" : "-", getScope().toString());
             }
         }
 

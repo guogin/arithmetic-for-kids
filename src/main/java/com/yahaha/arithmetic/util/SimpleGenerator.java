@@ -106,7 +106,7 @@ public class SimpleGenerator implements Generator {
         @Override
         public Question generateQuestion(SimpleScope scope) throws InvalidScopeException {
             if (scope.isCarryOrBorrowEnabled() && scope.getNumberOfDigits() < 2) {
-                throw new InvalidScopeException(InvalidScopeException.BORROW_NOT_POSSIBLE, "Borrow is not possible if number of digits is 1");
+                throw new InvalidScopeException("Borrow is not possible if number of digits is 1", "borrow.is.not.possible");
             }
 
             Integer[] leftDigits = new Integer[scope.getNumberOfDigits()];

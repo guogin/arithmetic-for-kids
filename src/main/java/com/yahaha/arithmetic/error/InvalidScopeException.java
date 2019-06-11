@@ -1,18 +1,21 @@
 package com.yahaha.arithmetic.error;
 
 public class InvalidScopeException extends Exception {
-    private int errorCode;
+    private String i18nMessageKey;
+    private Object[] arguments;
 
-    public static final int DERIVED_MIN_GT_MAX = 1;
-    public static final int BORROW_NOT_POSSIBLE = 2;
-
-    public InvalidScopeException(int errorCode, String message) {
+    public InvalidScopeException(String message, String i18nMessageKey, Object...arguments) {
         super(message);
 
-        this.errorCode = errorCode;
+        this.i18nMessageKey = i18nMessageKey;
+        this.arguments = arguments;
     }
 
-    public int getErrorCode() {
-        return errorCode;
+    public String getI18nMessageKey() {
+        return i18nMessageKey;
+    }
+
+    public Object[] getArguments() {
+        return arguments;
     }
 }
